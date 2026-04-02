@@ -1,0 +1,3 @@
+=DATA(EXT.TEXTO(G2; LOCALIZAR(","; G2)-4; 4); (LOCALIZAR(EXT.TEXTO(G2; LOCALIZAR(" de "; G2)+4; 3); "janfevmarabrmaijunjulagosetoutnovdez")+2)/3; ESQUERDA(G2; LOCALIZAR(" de "; G2)-1))
+
+="W" & TEXTO(NÚMSEMANA(HOJE()); "00")

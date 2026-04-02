@@ -1,0 +1,735 @@
+<!doctype html>
+<html lang="pt-BR">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Gerador de Etiquetas</title>
+		<script src="https://cdn.tailwindcss.com"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+		<style>
+			@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap");
+			*,
+			*::before,
+			*::after {
+				box-sizing: border-box;
+				font-family: "Inter", sans-serif;
+			}
+
+			/* ─── Página ─── */
+			body {
+				background: #0f1117;
+				min-height: 100vh;
+			}
+
+			/* ─── Animações ─── */
+			@keyframes fadeUp {
+				from {
+					opacity: 0;
+					transform: translateY(18px);
+				}
+				to {
+					opacity: 1;
+					transform: translateY(0);
+				}
+			}
+			.anim {
+				animation: fadeUp 0.5s ease both;
+			}
+			.anim-1 {
+				animation: fadeUp 0.5s 0.08s ease both;
+			}
+			.anim-2 {
+				animation: fadeUp 0.5s 0.16s ease both;
+			}
+			.anim-3 {
+				animation: fadeUp 0.5s 0.24s ease both;
+			}
+
+			/* ─── Sidebar / Painel ─── */
+			#painel-controle {
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 340px;
+				height: 100vh;
+				background: #16181f;
+				border-right: 1px solid #23263a;
+				display: flex;
+				flex-direction: column;
+				overflow-y: auto;
+				z-index: 100;
+				padding: 28px 24px 32px;
+			}
+
+			/* ─── Logo / Brand ─── */
+			.brand {
+				display: flex;
+				align-items: center;
+				gap: 12px;
+				padding: 14px 16px;
+				background: linear-gradient(135deg, #fff159 0%, #ffe000 100%);
+				border-radius: 14px;
+				margin-bottom: 28px;
+			}
+			.brand img {
+				height: 36px;
+				object-fit: contain;
+			}
+			.brand-text h1 {
+				font-size: 15px;
+				font-weight: 800;
+				color: #111;
+				letter-spacing: -0.3px;
+			}
+			.brand-text p {
+				font-size: 11px;
+				font-weight: 600;
+				color: #7a6f00;
+				text-transform: uppercase;
+				letter-spacing: 0.6px;
+				margin-top: 2px;
+			}
+
+			/* ─── Seção label ─── */
+			.section-label {
+				font-size: 10px;
+				font-weight: 700;
+				text-transform: uppercase;
+				letter-spacing: 1.2px;
+				color: #4a5068;
+				margin-bottom: 12px;
+				margin-top: 24px;
+			}
+			.section-label:first-of-type {
+				margin-top: 0;
+			}
+
+			/* ─── Input ─── */
+			.field {
+				margin-bottom: 14px;
+			}
+			.field label {
+				display: block;
+				font-size: 11.5px;
+				font-weight: 600;
+				color: #7b83a0;
+				margin-bottom: 6px;
+				letter-spacing: 0.3px;
+			}
+			.field input {
+				width: 100%;
+				background: #1e2130;
+				border: 1.5px solid #2a2e45;
+				border-radius: 10px;
+				padding: 10px 14px;
+				font-size: 13.5px;
+				color: #e8eaf2;
+				outline: none;
+				transition:
+					border 0.2s,
+					box-shadow 0.2s;
+			}
+			.field input::placeholder {
+				color: #3d4260;
+			}
+			.field input:focus {
+				border-color: #3483fa;
+				box-shadow: 0 0 0 3px rgba(52, 131, 250, 0.15);
+			}
+
+			.grid2 {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 12px;
+			}
+
+			/* ─── Divider ─── */
+			.divider {
+				border: none;
+				border-top: 1px solid #23263a;
+				margin: 20px 0;
+			}
+
+			/* ─── Botões ─── */
+			.btn {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				gap: 8px;
+				width: 100%;
+				height: 46px;
+				border-radius: 12px;
+				font-size: 12.5px;
+				font-weight: 700;
+				text-transform: uppercase;
+				letter-spacing: 0.8px;
+				cursor: pointer;
+				border: none;
+				outline: none;
+				transition: all 0.2s ease;
+				position: relative;
+				overflow: hidden;
+			}
+			.btn::after {
+				content: "";
+				position: absolute;
+				inset: 0;
+				background: rgba(255, 255, 255, 0);
+				transition: background 0.2s;
+			}
+			.btn:hover::after {
+				background: rgba(255, 255, 255, 0.1);
+			}
+			.btn:active {
+				transform: scale(0.97);
+			}
+
+			.btn-gerar {
+				background: linear-gradient(
+					135deg,
+					#2463e8,
+					#3483fa 60%,
+					#1a55d4
+				);
+				color: #fff;
+				box-shadow: 0 4px 18px rgba(52, 131, 250, 0.4);
+				margin-bottom: 10px;
+			}
+			.btn-gerar:hover {
+				box-shadow: 0 6px 24px rgba(52, 131, 250, 0.55);
+			}
+
+			.btn-print {
+				background: linear-gradient(
+					135deg,
+					#00a550,
+					#00c864 60%,
+					#009145
+				);
+				color: #fff;
+				box-shadow: 0 4px 18px rgba(0, 185, 89, 0.35);
+			}
+			.btn-print:hover {
+				box-shadow: 0 6px 24px rgba(0, 185, 89, 0.5);
+			}
+
+			.btn svg {
+				flex-shrink: 0;
+			}
+
+			/* ─── Dica ─── */
+			.hint {
+				margin-top: auto;
+				padding-top: 20px;
+				text-align: center;
+				font-size: 11px;
+				color: #3d4260;
+			}
+			.hint kbd {
+				background: #1e2130;
+				border: 1px solid #2a2e45;
+				border-radius: 5px;
+				padding: 1px 6px;
+				font-size: 10.5px;
+				color: #7b83a0;
+				font-family: monospace;
+			}
+
+			/* ─── Área de preview ─── */
+			#area-preview {
+				margin-left: 340px;
+				min-height: 100vh;
+				padding: 40px;
+				display: flex;
+				flex-wrap: wrap;
+				align-content: flex-start;
+				gap: 32px;
+				justify-content: center;
+			}
+
+			/* ─── Empty state ─── */
+			#empty-state {
+				width: 100%;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				min-height: 80vh;
+				gap: 12px;
+				color: #2a2e45;
+			}
+			#empty-state svg {
+				opacity: 0.25;
+			}
+			#empty-state p {
+				font-size: 14px;
+				font-weight: 600;
+				color: #3d4260;
+			}
+			#empty-state span {
+				font-size: 12px;
+				color: #2a2e45;
+			}
+
+			/* ─── Card da Etiqueta (preview) ─── */
+			.etiqueta-wrap {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				gap: 10px;
+				animation: fadeUp 0.4s ease both;
+			}
+			.etiqueta-num {
+				font-size: 11px;
+				font-weight: 700;
+				color: #3d4260;
+				text-transform: uppercase;
+				letter-spacing: 1px;
+			}
+
+			.etiqueta {
+				width: 320px;
+				border: 1.5px solid #dde1ec;
+				border-radius: 6px;
+				overflow: hidden;
+				background: #fff;
+				box-shadow: 0 8px 40px rgba(0, 0, 0, 0.35);
+			}
+
+			.et-topo {
+				background: #fff;
+				padding: 10px 14px;
+				border-bottom: 2.5px solid #111;
+				display: flex;
+				align-items: center;
+				min-height: 52px;
+			}
+			.et-topo img {
+				height: 30px;
+				object-fit: contain;
+			}
+			.et-logo-fallback {
+				font-size: 20px;
+				font-weight: 900;
+				color: #3483fa;
+				letter-spacing: -1px;
+			}
+
+			.et-band {
+				background: #111;
+				color: #fff;
+				text-align: center;
+				text-transform: uppercase;
+				font-weight: 800;
+			}
+			.et-band-titulo {
+				font-size: 16.5px;
+				padding: 8px 8px;
+				letter-spacing: 0.6px;
+				border-bottom: 1.5px solid #fff;
+			}
+			.et-band-id {
+				font-size: 16px;
+				padding: 8px 8px;
+				letter-spacing: 1.5px;
+				font-family: "Courier New", monospace;
+			}
+
+			.et-qr {
+				background: #fff;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				padding: 18px;
+			}
+			.et-qr-box {
+				border: 1.5px solid #111;
+				padding: 8px;
+				display: inline-flex;
+				background: #fff;
+			}
+
+			/* ════════════════════════════════
+       IMPRESSÃO
+    ════════════════════════════════ */
+			@media print {
+				* {
+					-webkit-print-color-adjust: exact !important;
+					print-color-adjust: exact !important;
+				}
+
+				html,
+				body {
+					margin: 0 !important;
+					padding: 0 !important;
+					background: white !important;
+				}
+
+				#painel-controle {
+					display: none !important;
+				}
+
+				#area-preview {
+					margin-left: 0 !important;
+					padding: 0 !important;
+					gap: 0 !important;
+					display: block !important;
+					background: white !important;
+				}
+
+				/* Numero da etiqueta oculto */
+				.etiqueta-num {
+					display: none !important;
+				}
+
+				/* Cada wrap = 1 folha */
+				.etiqueta-wrap {
+					page-break-after: always;
+					page-break-inside: avoid;
+					display: flex !important;
+					align-items: center !important;
+					justify-content: center !important;
+					width: 210mm !important;
+					height: 297mm !important;
+					background: white !important;
+					box-shadow: none !important;
+					animation: none !important;
+					padding: 8mm !important;
+				}
+
+				/* Etiqueta ocupa todo o espaço disponível dentro da folha */
+				.etiqueta {
+					width: 100% !important;
+					height: 100% !important;
+					max-width: 194mm !important;
+					max-height: 281mm !important;
+					border: 1.5px solid #111 !important;
+					border-radius: 0 !important;
+					box-shadow: none !important;
+					display: flex !important;
+					flex-direction: column !important;
+					background: white !important;
+				}
+
+				.et-topo {
+					min-height: 72px !important;
+					padding: 14px 20px !important;
+					border-bottom: 3px solid #111 !important;
+				}
+				.et-topo img {
+					height: 44px !important;
+				}
+				.et-logo-fallback {
+					font-size: 28px !important;
+				}
+
+				.et-band-titulo {
+					font-size: 20px !important;
+					padding: 14px 12px !important;
+					letter-spacing: 1px !important;
+				}
+				.et-band-id {
+					font-size: 18px !important;
+					padding: 14px 12px !important;
+					letter-spacing: 2px !important;
+				}
+
+				.et-qr {
+					flex: 1 !important;
+					padding: 0 !important;
+				}
+				.et-qr-box {
+					padding: 14px !important;
+					border: 2px solid #111 !important;
+				}
+				/* Forçar QR maior na impressão via transform */
+				.et-qr-box > div {
+					transform: scale(1.9) !important;
+					transform-origin: center center !important;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<!-- ════════════════════════
+       PAINEL LATERAL
+  ════════════════════════ -->
+		<aside id="painel-controle">
+			<!-- Brand -->
+			<div class="brand anim">
+				<img
+					src="./mercado_livre.png"
+					alt="Logo Mercado Livre"
+					style="height: 36px; object-fit: contain"
+				/>
+				<div class="brand-text">
+					<h1>Gerador de Etiquetas</h1>
+				</div>
+			</div>
+
+			<!-- Configurações -->
+			<p class="section-label anim-1">Configurações</p>
+
+			<div class="anim-1">
+				<div class="field">
+					<label>Título da Etiqueta</label>
+					<input
+						id="input-titulo"
+						type="text"
+						placeholder="PACOTES SEM ID - SALVADOS"
+					/>
+				</div>
+				<div class="field">
+					<label>Prefixo do ID</label>
+					<input
+						id="input-prefixo"
+						type="text"
+						placeholder="SEMID_SMG2_"
+					/>
+				</div>
+				<div class="grid2">
+					<div class="field">
+						<label>ID Inicial</label>
+						<input
+							id="input-id-inicial"
+							type="number"
+							placeholder="220"
+						/>
+					</div>
+					<div class="field">
+						<label>Quantidade</label>
+						<input
+							id="input-quantidade"
+							type="number"
+							placeholder="5"
+							min="1"
+						/>
+					</div>
+				</div>
+			</div>
+
+			<hr class="divider anim-2" />
+
+			<!-- Ações -->
+			<p class="section-label anim-2" style="margin-top: 0">Ações</p>
+
+			<div class="anim-2">
+				<button class="btn btn-gerar" onclick="gerarEtiquetas()">
+					<svg
+						width="15"
+						height="15"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2.5"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+					>
+						<polygon
+							points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"
+						/>
+					</svg>
+					Gerar e Salvar
+				</button>
+
+				<button
+					id="btn-imprimir"
+					class="btn btn-print"
+					onclick="window.print()"
+					style="display: none"
+				>
+					<svg
+						width="15"
+						height="15"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2.5"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+					>
+						<polyline points="6 9 6 2 18 2 18 9" />
+						<path
+							d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"
+						/>
+						<rect x="6" y="14" width="12" height="8" />
+					</svg>
+					Imprimir Agora
+				</button>
+			</div>
+
+			<!-- Hint -->
+			<div class="hint anim-3">
+				<kbd>Alt</kbd> + <kbd>0</kbd> &nbsp;→&nbsp; Resetar
+				configurações
+			</div>
+		</aside>
+
+		<!-- ════════════════════════
+       ÁREA DE PREVIEW
+  ════════════════════════ -->
+		<main id="area-preview">
+			<div id="empty-state">
+				<svg
+					width="72"
+					height="72"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="#4a5068"
+					stroke-width="1.2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				>
+					<rect x="3" y="3" width="18" height="18" rx="2" />
+					<path d="M3 9h18M9 21V9" />
+					<rect x="12" y="12" width="6" height="6" />
+				</svg>
+				<p>Nenhuma etiqueta gerada</p>
+				<span>Preencha os campos e clique em Gerar</span>
+			</div>
+		</main>
+
+		<!-- ════════════════════════
+       JAVASCRIPT
+  ════════════════════════ -->
+		<script>
+			const DEFAULTS = {
+				titulo: "PACOTES SEM ID - SALVADOS",
+				prefixo: "SEMID_SMG2_",
+				idInicial: 220,
+				quantidade: 5,
+			};
+
+			window.onload = () => {
+				document.getElementById("input-titulo").value =
+					localStorage.getItem("titulo") || DEFAULTS.titulo;
+				document.getElementById("input-prefixo").value =
+					localStorage.getItem("prefixo") || DEFAULTS.prefixo;
+				document.getElementById("input-id-inicial").value =
+					localStorage.getItem("idInicial") || DEFAULTS.idInicial;
+				document.getElementById("input-quantidade").value =
+					localStorage.getItem("quantidade") || DEFAULTS.quantidade;
+			};
+
+			function gerarEtiquetas() {
+				const titulo =
+					document.getElementById("input-titulo").value.trim() ||
+					DEFAULTS.titulo;
+				const prefixo =
+					document.getElementById("input-prefixo").value.trim() ||
+					DEFAULTS.prefixo;
+				const idInicial =
+					parseInt(
+						document.getElementById("input-id-inicial").value,
+					) || DEFAULTS.idInicial;
+				const quantidade =
+					parseInt(
+						document.getElementById("input-quantidade").value,
+					) || DEFAULTS.quantidade;
+
+				localStorage.setItem("titulo", titulo);
+				localStorage.setItem("prefixo", prefixo);
+				localStorage.setItem("idInicial", idInicial);
+				localStorage.setItem("quantidade", quantidade);
+
+				const area = document.getElementById("area-preview");
+				area.innerHTML = "";
+
+				for (let i = 0; i < quantidade; i++) {
+					const idNumero = idInicial + i;
+					const idCompleto = prefixo + idNumero;
+					const delay = (i * 0.06).toFixed(2);
+
+					// Wrapper
+					const wrap = document.createElement("div");
+					wrap.className = "etiqueta-wrap";
+					wrap.style.animationDelay = delay + "s";
+
+					// Número
+					const num = document.createElement("div");
+					num.className = "etiqueta-num";
+					num.textContent = `Etiqueta ${i + 1} de ${quantidade}`;
+
+					// Etiqueta
+					const etiqueta = document.createElement("div");
+					etiqueta.className = "etiqueta";
+
+					// Topo
+					const topo = document.createElement("div");
+					topo.className = "et-topo";
+					topo.innerHTML = `
+          <img src="./mercado_livre.png" alt="Logo Mercado Livre"
+               style="height: 38px; object-fit: contain;"
+               onerror="this.outerHTML='<span class=\\'et-logo-fallback\\'>ML</span>'" />`;
+
+					// Faixa Título
+					const bandTitulo = document.createElement("div");
+					bandTitulo.className = "et-band et-band-titulo";
+					bandTitulo.textContent = titulo;
+
+					// Faixa ID
+					const bandId = document.createElement("div");
+					bandId.className = "et-band et-band-id";
+					bandId.textContent = idCompleto;
+
+					// QR
+					const qrArea = document.createElement("div");
+					qrArea.className = "et-qr";
+					const qrBox = document.createElement("div");
+					qrBox.className = "et-qr-box";
+					const qrDiv = document.createElement("div");
+					qrBox.appendChild(qrDiv);
+					qrArea.appendChild(qrBox);
+
+					etiqueta.appendChild(topo);
+					etiqueta.appendChild(bandTitulo);
+					etiqueta.appendChild(bandId);
+					etiqueta.appendChild(qrArea);
+
+					wrap.appendChild(num);
+					wrap.appendChild(etiqueta);
+					area.appendChild(wrap);
+
+					new QRCode(qrDiv, {
+						text: idCompleto,
+						width: 200,
+						height: 200,
+						correctLevel: QRCode.CorrectLevel.H,
+					});
+				}
+
+				document.getElementById("btn-imprimir").style.display = "flex";
+				area.scrollIntoView({ behavior: "smooth", block: "start" });
+			}
+
+			// Alt + 0 → Reset
+			document.addEventListener("keydown", (e) => {
+				if (e.altKey && e.key === "0") {
+					localStorage.clear();
+					document.getElementById("input-titulo").value =
+						DEFAULTS.titulo;
+					document.getElementById("input-prefixo").value =
+						DEFAULTS.prefixo;
+					document.getElementById("input-id-inicial").value =
+						DEFAULTS.idInicial;
+					document.getElementById("input-quantidade").value =
+						DEFAULTS.quantidade;
+					document.getElementById("area-preview").innerHTML = `
+          <div id="empty-state">
+            <svg width="72" height="72" viewBox="0 0 24 24" fill="none"
+                 stroke="#4a5068" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <path d="M3 9h18M9 21V9"/>
+              <rect x="12" y="12" width="6" height="6"/>
+            </svg>
+            <p>Nenhuma etiqueta gerada</p>
+            <span>Preencha os campos e clique em Gerar</span>
+          </div>`;
+					document.getElementById("btn-imprimir").style.display =
+						"none";
+					alert("✅ Configurações resetadas com sucesso!");
+				}
+			});
+		</script>
+	</body>
+</html>

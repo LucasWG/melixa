@@ -1,0 +1,2732 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="light">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>📦 Busca Inteligente de Pacotes</title>
+		<style>
+			/* ===== RESET & TOKENS ===== */
+			*,
+			*::before,
+			*::after {
+				box-sizing: border-box;
+				margin: 0;
+				padding: 0;
+			}
+
+			:root {
+				--bg: #f0f2f5;
+				--surface: #ffffff;
+				--surface2: #f8f9fa;
+				--border: #e0e4ea;
+				--text: #1a1d23;
+				--text2: #5a6072;
+				--text3: #8892a4;
+				--primary: #2563eb;
+				--primary-h: #1d4ed8;
+				--primary-s: #eff6ff;
+				--accent: #0ea5e9;
+				--success: #16a34a;
+				--warning: #d97706;
+				--danger: #dc2626;
+				--radius: 10px;
+				--radius-sm: 6px;
+				--shadow:
+					0 1px 4px rgba(0, 0, 0, 0.08),
+					0 4px 16px rgba(0, 0, 0, 0.06);
+				--shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
+				--transition: 0.18s ease;
+				--sidebar-w: 280px;
+				--header-h: 64px;
+			}
+
+			[data-theme="dark"] {
+				--bg: #0f1117;
+				--surface: #1a1d26;
+				--surface2: #22263a;
+				--border: #2d3247;
+				--text: #e8ecf4;
+				--text2: #9aa3b8;
+				--text3: #5a6272;
+				--primary: #3b82f6;
+				--primary-h: #60a5fa;
+				--primary-s: #1e3a5f;
+				--shadow:
+					0 1px 4px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.25);
+				--shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.4);
+			}
+
+			body {
+				font-family:
+					"Inter",
+					system-ui,
+					-apple-system,
+					sans-serif;
+				font-size: 14px;
+				background: var(--bg);
+				color: var(--text);
+				min-height: 100vh;
+				transition:
+					background var(--transition),
+					color var(--transition);
+			}
+
+			::-webkit-scrollbar {
+				width: 6px;
+				height: 6px;
+			}
+			::-webkit-scrollbar-track {
+				background: transparent;
+			}
+			::-webkit-scrollbar-thumb {
+				background: var(--border);
+				border-radius: 99px;
+			}
+
+			/* ===== HEADER ===== */
+			#header {
+				position: sticky;
+				top: 0;
+				z-index: 100;
+				height: var(--header-h);
+				background: var(--surface);
+				border-bottom: 1px solid var(--border);
+				box-shadow: var(--shadow);
+				display: flex;
+				align-items: center;
+				gap: 12px;
+				padding: 0 20px;
+			}
+			#logo {
+				display: flex;
+				align-items: center;
+				gap: 8px;
+				font-size: 17px;
+				font-weight: 700;
+				color: var(--primary);
+				white-space: nowrap;
+				flex-shrink: 0;
+			}
+			#logo span {
+				font-size: 22px;
+			}
+			#search-wrap {
+				flex: 1;
+				max-width: 520px;
+				position: relative;
+			}
+			#search-wrap svg {
+				position: absolute;
+				left: 12px;
+				top: 50%;
+				transform: translateY(-50%);
+				color: var(--text3);
+				pointer-events: none;
+			}
+			#globalSearch {
+				width: 100%;
+				padding: 9px 14px 9px 38px;
+				border: 1.5px solid var(--border);
+				border-radius: var(--radius);
+				background: var(--surface2);
+				color: var(--text);
+				font-size: 14px;
+				transition:
+					border-color var(--transition),
+					box-shadow var(--transition);
+				outline: none;
+			}
+			#globalSearch:focus {
+				border-color: var(--primary);
+				box-shadow: 0 0 0 3px var(--primary-s);
+			}
+			#globalSearch::placeholder {
+				color: var(--text3);
+			}
+			.header-actions {
+				display: flex;
+				align-items: center;
+				gap: 8px;
+				flex-shrink: 0;
+				margin-left: auto;
+			}
+
+			.btn {
+				display: inline-flex;
+				align-items: center;
+				gap: 6px;
+				padding: 8px 14px;
+				border-radius: var(--radius-sm);
+				border: 1.5px solid transparent;
+				cursor: pointer;
+				font-size: 13px;
+				font-weight: 600;
+				transition: all var(--transition);
+				white-space: nowrap;
+				outline: none;
+			}
+			.btn:focus-visible {
+				box-shadow: 0 0 0 3px var(--primary-s);
+			}
+			.btn-primary {
+				background: var(--primary);
+				color: #fff;
+			}
+			.btn-primary:hover {
+				background: var(--primary-h);
+			}
+			.btn-ghost {
+				background: transparent;
+				color: var(--text2);
+				border-color: var(--border);
+			}
+			.btn-ghost:hover {
+				background: var(--surface2);
+				color: var(--text);
+			}
+			.btn-danger {
+				background: transparent;
+				color: var(--danger);
+				border-color: #fca5a5;
+			}
+			.btn-danger:hover {
+				background: #fef2f2;
+			}
+			[data-theme="dark"] .btn-danger:hover {
+				background: #3b0a0a;
+			}
+			.btn-icon {
+				padding: 8px;
+				border-radius: var(--radius-sm);
+				background: transparent;
+				border: 1.5px solid var(--border);
+				color: var(--text2);
+				cursor: pointer;
+				transition: all var(--transition);
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+			}
+			.btn-icon:hover {
+				background: var(--surface2);
+				color: var(--text);
+			}
+			#uploadLabel {
+				display: inline-flex;
+				align-items: center;
+				gap: 6px;
+				padding: 8px 14px;
+				border-radius: var(--radius-sm);
+				border: 1.5px solid var(--primary);
+				cursor: pointer;
+				font-size: 13px;
+				font-weight: 600;
+				color: var(--primary);
+				background: var(--primary-s);
+				transition: all var(--transition);
+				white-space: nowrap;
+			}
+			#uploadLabel:hover {
+				background: var(--primary);
+				color: #fff;
+			}
+			#fileInput {
+				display: none;
+			}
+
+			/* ===== CACHE BADGE ===== */
+			#cacheBadge {
+				display: flex;
+				align-items: center;
+				gap: 6px;
+				padding: 4px 10px;
+				border-radius: 99px;
+				font-size: 12px;
+				font-weight: 600;
+				border: 1.5px solid var(--border);
+				background: var(--surface2);
+				color: var(--text3);
+				white-space: nowrap;
+				flex-shrink: 0;
+			}
+			#cacheBadge.active {
+				color: var(--success);
+				border-color: #86efac;
+				background: #f0fdf4;
+			}
+			#cacheBadge.memory {
+				color: var(--warning);
+				border-color: #fde68a;
+				background: #fffbeb;
+			}
+			[data-theme="dark"] #cacheBadge.active {
+				background: #052e16;
+				border-color: #166534;
+			}
+			[data-theme="dark"] #cacheBadge.memory {
+				background: #2d1a00;
+				border-color: #92400e;
+			}
+
+			/* ===== LAYOUT ===== */
+			#layout {
+				display: flex;
+				min-height: calc(100vh - var(--header-h));
+			}
+
+			/* ===== SIDEBAR ===== */
+			#sidebar {
+				width: var(--sidebar-w);
+				flex-shrink: 0;
+				background: var(--surface);
+				border-right: 1px solid var(--border);
+				padding: 16px;
+				overflow-y: auto;
+				height: calc(100vh - var(--header-h));
+				position: sticky;
+				top: var(--header-h);
+				display: flex;
+				flex-direction: column;
+				gap: 16px;
+			}
+			.filter-section {
+				border-bottom: 1px solid var(--border);
+				padding-bottom: 16px;
+			}
+			.filter-section:last-child {
+				border-bottom: none;
+				padding-bottom: 0;
+			}
+			.filter-title {
+				font-size: 11px;
+				font-weight: 700;
+				text-transform: uppercase;
+				letter-spacing: 0.08em;
+				color: var(--text3);
+				margin-bottom: 10px;
+				display: flex;
+				align-items: center;
+				gap: 6px;
+			}
+			.quick-search-wrap {
+				position: relative;
+			}
+			.quick-search-wrap svg {
+				position: absolute;
+				left: 9px;
+				top: 50%;
+				transform: translateY(-50%);
+				color: var(--text3);
+				pointer-events: none;
+			}
+			#quickSearch {
+				width: 100%;
+				padding: 7px 10px 7px 30px;
+				border: 1.5px solid var(--border);
+				border-radius: var(--radius-sm);
+				background: var(--surface2);
+				color: var(--text);
+				font-size: 13px;
+				outline: none;
+				transition: border-color var(--transition);
+			}
+			#quickSearch:focus {
+				border-color: var(--primary);
+			}
+			.checklist {
+				display: flex;
+				flex-direction: column;
+				gap: 6px;
+				max-height: 180px;
+				overflow-y: auto;
+			}
+			.checklist label {
+				display: flex;
+				align-items: center;
+				gap: 8px;
+				cursor: pointer;
+				font-size: 13px;
+				color: var(--text2);
+				padding: 3px 4px;
+				border-radius: var(--radius-sm);
+				transition: background var(--transition);
+			}
+			.checklist label:hover {
+				background: var(--surface2);
+			}
+			.checklist label input[type="checkbox"] {
+				accent-color: var(--primary);
+				width: 15px;
+				height: 15px;
+			}
+			.checklist-count {
+				margin-left: auto;
+				font-size: 11px;
+				background: var(--surface2);
+				border: 1px solid var(--border);
+				border-radius: 99px;
+				padding: 1px 7px;
+				color: var(--text3);
+			}
+			.date-range {
+				display: flex;
+				flex-direction: column;
+				gap: 8px;
+			}
+			.date-range label {
+				font-size: 12px;
+				color: var(--text2);
+			}
+			.date-range input[type="date"] {
+				width: 100%;
+				padding: 7px 9px;
+				border: 1.5px solid var(--border);
+				border-radius: var(--radius-sm);
+				background: var(--surface2);
+				color: var(--text);
+				font-size: 13px;
+				outline: none;
+			}
+			.date-range input[type="date"]:focus {
+				border-color: var(--primary);
+			}
+			.usd-range {
+				display: flex;
+				gap: 8px;
+				align-items: center;
+			}
+			.usd-range input {
+				width: 100%;
+				padding: 7px 9px;
+				border: 1.5px solid var(--border);
+				border-radius: var(--radius-sm);
+				background: var(--surface2);
+				color: var(--text);
+				font-size: 13px;
+				outline: none;
+			}
+			.usd-range input:focus {
+				border-color: var(--primary);
+			}
+			.usd-sep {
+				color: var(--text3);
+				font-size: 12px;
+				flex-shrink: 0;
+			}
+			#pageSize {
+				width: 100%;
+				padding: 7px 9px;
+				border: 1.5px solid var(--border);
+				border-radius: var(--radius-sm);
+				background: var(--surface2);
+				color: var(--text);
+				font-size: 13px;
+				outline: none;
+				cursor: pointer;
+			}
+			#activeChips {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 6px;
+			}
+			.chip {
+				display: inline-flex;
+				align-items: center;
+				gap: 5px;
+				padding: 3px 8px 3px 10px;
+				border-radius: 99px;
+				background: var(--primary-s);
+				border: 1px solid #93c5fd;
+				color: var(--primary);
+				font-size: 12px;
+				font-weight: 600;
+			}
+			.chip button {
+				background: none;
+				border: none;
+				cursor: pointer;
+				padding: 0;
+				color: var(--primary);
+				font-size: 14px;
+				line-height: 1;
+				display: flex;
+				align-items: center;
+			}
+			.chip button:hover {
+				color: var(--danger);
+			}
+
+			/* ===== MAIN ===== */
+			#main {
+				flex: 1;
+				padding: 20px;
+				overflow: hidden;
+				min-width: 0;
+			}
+			#mainToolbar {
+				display: flex;
+				align-items: center;
+				gap: 12px;
+				margin-bottom: 16px;
+				flex-wrap: wrap;
+			}
+			#resultCount {
+				font-size: 14px;
+				font-weight: 700;
+				color: var(--text2);
+				flex: 1;
+				min-width: 140px;
+			}
+			#resultCount span {
+				color: var(--primary);
+			}
+			#sortSelect {
+				padding: 7px 10px;
+				border: 1.5px solid var(--border);
+				border-radius: var(--radius-sm);
+				background: var(--surface);
+				color: var(--text);
+				font-size: 13px;
+				cursor: pointer;
+				outline: none;
+			}
+			#sortSelect:focus {
+				border-color: var(--primary);
+			}
+			#cardsGrid {
+				display: grid;
+				grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+				gap: 14px;
+			}
+			.card {
+				background: var(--surface);
+				border: 1.5px solid var(--border);
+				border-radius: var(--radius);
+				padding: 16px;
+				cursor: pointer;
+				transition: all var(--transition);
+				position: relative;
+				overflow: hidden;
+			}
+			.card::before {
+				content: "";
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				height: 3px;
+				background: linear-gradient(
+					90deg,
+					var(--primary),
+					var(--accent)
+				);
+				opacity: 0;
+				transition: opacity var(--transition);
+			}
+			.card:hover {
+				border-color: var(--primary);
+				box-shadow: var(--shadow-lg);
+				transform: translateY(-2px);
+			}
+			.card:hover::before {
+				opacity: 1;
+			}
+			.card:active {
+				transform: translateY(0);
+			}
+			.card-header {
+				display: flex;
+				align-items: flex-start;
+				justify-content: space-between;
+				gap: 10px;
+				margin-bottom: 10px;
+			}
+			.card-id {
+				font-size: 11px;
+				font-weight: 700;
+				font-family: "Courier New", monospace;
+				color: var(--primary);
+				background: var(--primary-s);
+				padding: 3px 8px;
+				border-radius: var(--radius-sm);
+				letter-spacing: 0.03em;
+			}
+			.card-badges {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 5px;
+			}
+			.badge {
+				font-size: 11px;
+				font-weight: 600;
+				padding: 2px 8px;
+				border-radius: 99px;
+				white-space: nowrap;
+			}
+			.badge-svc {
+				background: #ede9fe;
+				color: #6d28d9;
+				border: 1px solid #c4b5fd;
+			}
+			.badge-tramo {
+				background: #e0f2fe;
+				color: #0369a1;
+				border: 1px solid #7dd3fc;
+			}
+			.badge-status {
+				background: #fef9c3;
+				color: #854d0e;
+				border: 1px solid #fde047;
+			}
+			.badge-risk {
+				background: #fee2e2;
+				color: #b91c1c;
+				border: 1px solid #fca5a5;
+			}
+			[data-theme="dark"] .badge-svc {
+				background: #2e1065;
+				color: #c4b5fd;
+				border-color: #4c1d95;
+			}
+			[data-theme="dark"] .badge-tramo {
+				background: #0c2a3d;
+				color: #7dd3fc;
+				border-color: #0e4163;
+			}
+			[data-theme="dark"] .badge-status {
+				background: #2d1e00;
+				color: #fde047;
+				border-color: #713f12;
+			}
+			[data-theme="dark"] .badge-risk {
+				background: #3b0a0a;
+				color: #fca5a5;
+				border-color: #7f1d1d;
+			}
+			.card-desc {
+				font-size: 13px;
+				font-weight: 500;
+				color: var(--text);
+				margin-bottom: 10px;
+				line-height: 1.45;
+				display: -webkit-box;
+				-webkit-line-clamp: 2;
+				line-clamp: 2;
+				-webkit-box-orient: vertical;
+				overflow: hidden;
+			}
+			.card-desc.empty {
+				color: var(--text3);
+				font-style: italic;
+			}
+			.card-meta {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 6px;
+			}
+			.card-meta-item {
+				display: flex;
+				flex-direction: column;
+				gap: 1px;
+			}
+			.card-meta-label {
+				font-size: 10px;
+				font-weight: 700;
+				text-transform: uppercase;
+				letter-spacing: 0.06em;
+				color: var(--text3);
+			}
+			.card-meta-value {
+				font-size: 12px;
+				font-weight: 600;
+				color: var(--text2);
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+			}
+			.card-meta-value.usd {
+				color: var(--success);
+			}
+			.card-meta-value.eta-high {
+				color: var(--danger);
+			}
+			.card-meta-value.eta-mid {
+				color: var(--warning);
+			}
+			.card-footer {
+				margin-top: 10px;
+				padding-top: 10px;
+				border-top: 1px solid var(--border);
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 8px;
+			}
+			.card-date {
+				font-size: 11px;
+				color: var(--text3);
+				display: flex;
+				align-items: center;
+				gap: 5px;
+			}
+			.card-click-hint {
+				font-size: 11px;
+				color: var(--primary);
+				font-weight: 600;
+				opacity: 0;
+				transition: opacity var(--transition);
+				display: flex;
+				align-items: center;
+				gap: 4px;
+			}
+			.card:hover .card-click-hint {
+				opacity: 1;
+			}
+
+			/* ===== EMPTY / DROP ===== */
+			#emptyState {
+				grid-column: 1 / -1;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+				padding: 80px 20px;
+				text-align: center;
+				color: var(--text3);
+				gap: 12px;
+			}
+			#emptyState .empty-icon {
+				font-size: 56px;
+			}
+			#emptyState h3 {
+				font-size: 18px;
+				font-weight: 700;
+				color: var(--text2);
+			}
+			#emptyState p {
+				font-size: 14px;
+				max-width: 360px;
+				line-height: 1.5;
+			}
+			#dropZone {
+				border: 2.5px dashed var(--border);
+				border-radius: var(--radius);
+				padding: 40px 20px;
+				text-align: center;
+				color: var(--text3);
+				transition: all var(--transition);
+				cursor: pointer;
+				grid-column: 1 / -1;
+			}
+			#dropZone.drag-over {
+				border-color: var(--primary);
+				background: var(--primary-s);
+				color: var(--primary);
+			}
+			#dropZone .drop-icon {
+				font-size: 40px;
+				margin-bottom: 12px;
+			}
+			#dropZone h3 {
+				font-size: 16px;
+				font-weight: 700;
+				color: var(--text2);
+				margin-bottom: 6px;
+			}
+			#dropZone p {
+				font-size: 13px;
+			}
+
+			/* ===== DEBUG PANEL ===== */
+			#debugPanel {
+				background: #1e1e2e;
+				color: #cdd6f4;
+				font-family: monospace;
+				font-size: 12px;
+				padding: 12px 16px;
+				border-radius: var(--radius);
+				margin-bottom: 16px;
+				max-height: 180px;
+				overflow-y: auto;
+				display: none;
+				line-height: 1.6;
+				border: 1px solid #313244;
+			}
+			#debugPanel.show {
+				display: block;
+			}
+			#debugPanel .log-ok {
+				color: #a6e3a1;
+			}
+			#debugPanel .log-warn {
+				color: #f9e2af;
+			}
+			#debugPanel .log-err {
+				color: #f38ba8;
+			}
+			#debugPanel .log-info {
+				color: #89dceb;
+			}
+			#debugToggle {
+				font-size: 12px;
+				color: var(--text3);
+				cursor: pointer;
+				text-decoration: underline;
+			}
+
+			/* ===== PAGINATION ===== */
+			#pagination {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				gap: 6px;
+				margin-top: 24px;
+				flex-wrap: wrap;
+			}
+			.page-btn {
+				min-width: 36px;
+				height: 36px;
+				padding: 0 10px;
+				border-radius: var(--radius-sm);
+				border: 1.5px solid var(--border);
+				background: var(--surface);
+				color: var(--text2);
+				cursor: pointer;
+				font-size: 13px;
+				font-weight: 600;
+				transition: all var(--transition);
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+			}
+			.page-btn:hover:not(:disabled) {
+				background: var(--primary);
+				color: #fff;
+				border-color: var(--primary);
+			}
+			.page-btn.active {
+				background: var(--primary);
+				color: #fff;
+				border-color: var(--primary);
+			}
+			.page-btn:disabled {
+				opacity: 0.35;
+				cursor: not-allowed;
+			}
+			#pageJumpWrap {
+				display: flex;
+				align-items: center;
+				gap: 6px;
+				font-size: 13px;
+				color: var(--text2);
+			}
+			#pageJump {
+				width: 60px;
+				padding: 6px 8px;
+				border: 1.5px solid var(--border);
+				border-radius: var(--radius-sm);
+				background: var(--surface2);
+				color: var(--text);
+				font-size: 13px;
+				text-align: center;
+				outline: none;
+			}
+			#pageJump:focus {
+				border-color: var(--primary);
+			}
+
+			/* ===== TOAST ===== */
+			#toastContainer {
+				position: fixed;
+				bottom: 24px;
+				right: 24px;
+				z-index: 9999;
+				display: flex;
+				flex-direction: column;
+				gap: 10px;
+				pointer-events: none;
+			}
+			.toast {
+				display: flex;
+				align-items: center;
+				gap: 10px;
+				padding: 12px 18px;
+				border-radius: var(--radius);
+				background: var(--surface);
+				border: 1.5px solid var(--border);
+				box-shadow: var(--shadow-lg);
+				font-size: 13px;
+				font-weight: 600;
+				color: var(--text);
+				pointer-events: auto;
+				animation: slideUp 0.25s ease;
+				min-width: 240px;
+				max-width: 380px;
+			}
+			.toast.success {
+				border-color: #86efac;
+				background: #f0fdf4;
+				color: #15803d;
+			}
+			.toast.error {
+				border-color: #fca5a5;
+				background: #fef2f2;
+				color: #b91c1c;
+			}
+			.toast.info {
+				border-color: #93c5fd;
+				background: #eff6ff;
+				color: #1d4ed8;
+			}
+			.toast.warn {
+				border-color: #fde68a;
+				background: #fffbeb;
+				color: #b45309;
+			}
+			[data-theme="dark"] .toast.success {
+				background: #052e16;
+				color: #4ade80;
+				border-color: #166534;
+			}
+			[data-theme="dark"] .toast.error {
+				background: #3b0a0a;
+				color: #f87171;
+				border-color: #7f1d1d;
+			}
+			[data-theme="dark"] .toast.info {
+				background: #1e3a5f;
+				color: #93c5fd;
+				border-color: #1e40af;
+			}
+			[data-theme="dark"] .toast.warn {
+				background: #2d1a00;
+				color: #fbbf24;
+				border-color: #92400e;
+			}
+			.toast-fade-out {
+				animation: fadeOut 0.4s ease forwards;
+			}
+			@keyframes slideUp {
+				from {
+					transform: translateY(20px);
+					opacity: 0;
+				}
+				to {
+					transform: translateY(0);
+					opacity: 1;
+				}
+			}
+			@keyframes fadeOut {
+				to {
+					opacity: 0;
+					transform: translateY(10px);
+				}
+			}
+
+			#progressBar {
+				position: fixed;
+				top: 0;
+				left: 0;
+				height: 3px;
+				background: linear-gradient(
+					90deg,
+					var(--primary),
+					var(--accent)
+				);
+				transition: width 0.3s ease;
+				z-index: 9999;
+			}
+
+			@media (max-width: 768px) {
+				#sidebar {
+					display: none;
+				}
+				#cardsGrid {
+					grid-template-columns: 1fr;
+				}
+			}
+			@media (max-width: 540px) {
+				#header {
+					gap: 8px;
+					padding: 0 12px;
+				}
+				#cacheBadge {
+					display: none;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<div id="progressBar" style="width: 0"></div>
+
+		<!-- HEADER -->
+		<header id="header">
+			<div id="logo">
+				<span>📦</span>
+				<span class="logo-text">PackSearch</span>
+			</div>
+			<div id="search-wrap">
+				<svg
+					width="16"
+					height="16"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+				>
+					<circle cx="11" cy="11" r="8" />
+					<path d="m21 21-4.35-4.35" />
+				</svg>
+				<input
+					type="text"
+					id="globalSearch"
+					placeholder='Busca: "frase exata" -excluir id:123 svc:SMG2 tramo:ONWAY'
+					autocomplete="off"
+					spellcheck="false"
+				/>
+			</div>
+			<div class="header-actions">
+				<div id="cacheBadge">Cache: vazio</div>
+				<label id="uploadLabel" for="fileInput">
+					<svg
+						width="15"
+						height="15"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2.5"
+					>
+						<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+						<polyline points="17 8 12 3 7 8" />
+						<line x1="12" y1="3" x2="12" y2="15" />
+					</svg>
+					Importar
+				</label>
+				<input type="file" id="fileInput" multiple accept=".csv,.txt" />
+				<button class="btn btn-danger" id="clearBtn">
+					<svg
+						width="14"
+						height="14"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2.5"
+					>
+						<polyline points="3 6 5 6 21 6" />
+						<path
+							d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"
+						/>
+						<path d="M10 11v6M14 11v6" />
+						<path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+					</svg>
+					Limpar
+				</button>
+				<button class="btn-icon" id="themeBtn" title="Alternar tema">
+					<svg
+						id="themeIcon"
+						width="16"
+						height="16"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+					>
+						<path
+							d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"
+						/>
+					</svg>
+				</button>
+			</div>
+		</header>
+
+		<!-- LAYOUT -->
+		<div id="layout">
+			<!-- SIDEBAR -->
+			<aside id="sidebar">
+				<div class="filter-section">
+					<div class="filter-title">
+						<svg
+							width="12"
+							height="12"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2.5"
+						>
+							<circle cx="11" cy="11" r="8" />
+							<path d="m21 21-4.35-4.35" />
+						</svg>
+						Pesquisa rápida
+					</div>
+					<div class="quick-search-wrap">
+						<svg
+							width="13"
+							height="13"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+						>
+							<circle cx="11" cy="11" r="8" />
+							<path d="m21 21-4.35-4.35" />
+						</svg>
+						<input
+							type="text"
+							id="quickSearch"
+							placeholder="Filtrar resultados..."
+							autocomplete="off"
+						/>
+					</div>
+				</div>
+				<div
+					class="filter-section"
+					id="chipsSection"
+					style="display: none"
+				>
+					<div class="filter-title">Filtros ativos</div>
+					<div id="activeChips"></div>
+				</div>
+				<div class="filter-section">
+					<div class="filter-title">
+						<svg
+							width="12"
+							height="12"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2.5"
+						>
+							<rect x="2" y="3" width="20" height="14" rx="2" />
+							<line x1="8" y1="21" x2="16" y2="21" />
+							<line x1="12" y1="17" x2="12" y2="21" />
+						</svg>
+						SVC
+					</div>
+					<div class="checklist" id="svcChecklist"></div>
+				</div>
+				<div class="filter-section">
+					<div class="filter-title">
+						<svg
+							width="12"
+							height="12"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2.5"
+						>
+							<path
+								d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"
+							/>
+						</svg>
+						Tramo
+					</div>
+					<div class="checklist" id="tramoChecklist"></div>
+				</div>
+				<div class="filter-section">
+					<div class="filter-title">
+						<svg
+							width="12"
+							height="12"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2.5"
+						>
+							<circle cx="12" cy="12" r="10" />
+							<polyline points="12 6 12 12 16 14" />
+						</svg>
+						Status
+					</div>
+					<div class="checklist" id="statusChecklist"></div>
+				</div>
+				<div class="filter-section">
+					<div class="filter-title">
+						<svg
+							width="12"
+							height="12"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2.5"
+						>
+							<rect x="3" y="4" width="18" height="18" rx="2" />
+							<line x1="16" y1="2" x2="16" y2="6" />
+							<line x1="8" y1="2" x2="8" y2="6" />
+							<line x1="3" y1="10" x2="21" y2="10" />
+						</svg>
+						Data de Atualização
+					</div>
+					<div class="date-range">
+						<label>De <input type="date" id="dateFrom" /></label>
+						<label>Até <input type="date" id="dateTo" /></label>
+					</div>
+				</div>
+				<div class="filter-section">
+					<div class="filter-title">
+						<svg
+							width="12"
+							height="12"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2.5"
+						>
+							<line x1="12" y1="1" x2="12" y2="23" />
+							<path
+								d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"
+							/>
+						</svg>
+						Valor USD
+					</div>
+					<div class="usd-range">
+						<input
+							type="number"
+							id="usdMin"
+							placeholder="Min"
+							min="0"
+							step="0.01"
+						/>
+						<span class="usd-sep">—</span>
+						<input
+							type="number"
+							id="usdMax"
+							placeholder="Máx"
+							min="0"
+							step="0.01"
+						/>
+					</div>
+				</div>
+				<div class="filter-section">
+					<div class="filter-title">
+						<svg
+							width="12"
+							height="12"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2.5"
+						>
+							<line x1="8" y1="6" x2="21" y2="6" />
+							<line x1="8" y1="12" x2="21" y2="12" />
+							<line x1="8" y1="18" x2="21" y2="18" />
+						</svg>
+						Itens por página
+					</div>
+					<select id="pageSize">
+						<option value="12">12 itens</option>
+						<option value="24" selected>24 itens</option>
+						<option value="48">48 itens</option>
+						<option value="96">96 itens</option>
+					</select>
+				</div>
+				<div class="filter-section">
+					<button
+						class="btn btn-ghost"
+						style="width: 100%; justify-content: center"
+						id="resetFiltersBtn"
+					>
+						<svg
+							width="14"
+							height="14"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2.5"
+						>
+							<polyline points="1 4 1 10 7 10" />
+							<path d="M3.51 15a9 9 0 1 0 .49-4.36" />
+						</svg>
+						Resetar filtros
+					</button>
+				</div>
+			</aside>
+
+			<!-- MAIN -->
+			<main id="main">
+				<div id="mainToolbar">
+					<div id="resultCount">Nenhum item carregado</div>
+					<span id="debugToggle" style="display: none">🐛 Debug</span>
+					<select id="sortSelect">
+						<option value="relevance">Relevância</option>
+						<option value="date_desc">Data: mais recente</option>
+						<option value="date_asc">Data: mais antigo</option>
+						<option value="id_asc">ID: crescente</option>
+						<option value="id_desc">ID: decrescente</option>
+						<option value="desc_az">Descrição: A–Z</option>
+						<option value="usd_desc">Valor USD: maior</option>
+						<option value="usd_asc">Valor USD: menor</option>
+						<option value="eta_desc">ETA: maior</option>
+					</select>
+				</div>
+				<div id="debugPanel"></div>
+				<div id="cardsGrid"></div>
+				<div id="pagination"></div>
+			</main>
+		</div>
+
+		<div id="toastContainer"></div>
+
+		<script>
+			/* ═══════════════════════════════════════════════════════════════════
+   PACKSEARCH  v2 — Parser duplo: CSV tabular + blocos chave:valor
+   ═══════════════════════════════════════════════════════════════════ */
+
+			/* ─── 0. Utils ──────────────────────────────────────────────────── */
+			const $ = (s, c = document) => c.querySelector(s);
+			const $$ = (s, c = document) => [...c.querySelectorAll(s)];
+
+			/* Debug log visual */
+			const debugLines = [];
+			function dbg(msg, type = "info") {
+				console.log(`[PS] ${msg}`);
+				debugLines.push({ msg, type });
+				if (debugLines.length > 200) debugLines.shift();
+				const panel = $("#debugPanel");
+				if (panel.classList.contains("show")) renderDebug();
+			}
+			function renderDebug() {
+				const panel = $("#debugPanel");
+				panel.innerHTML = debugLines
+					.map((l) => `<div class="log-${l.type}">${l.msg}</div>`)
+					.join("");
+				panel.scrollTop = panel.scrollHeight;
+			}
+			$("#debugToggle").addEventListener("click", () => {
+				const p = $("#debugPanel");
+				p.classList.toggle("show");
+				if (p.classList.contains("show")) renderDebug();
+			});
+
+			/* ─── 1. Toast ──────────────────────────────────────────────────── */
+			function toast(msg, type = "info", duration = 3500) {
+				const icons = {
+					success: "✅",
+					error: "❌",
+					info: "ℹ️",
+					warn: "⚠️",
+				};
+				const el = document.createElement("div");
+				el.className = `toast ${type}`;
+				el.innerHTML = `<span>${icons[type] || "📌"}</span><span>${msg}</span>`;
+				$("#toastContainer").appendChild(el);
+				setTimeout(() => {
+					el.classList.add("toast-fade-out");
+					setTimeout(() => el.remove(), 420);
+				}, duration);
+			}
+
+			function setProgress(p) {
+				const bar = $("#progressBar");
+				bar.style.width = p + "%";
+				if (p >= 100) setTimeout(() => (bar.style.width = "0"), 600);
+			}
+
+			/* ─── 2. Normalização ───────────────────────────────────────────── */
+			function normalizeKey(k) {
+				return (k || "")
+					.trim()
+					.toLowerCase()
+					.normalize("NFD")
+					.replace(/[\u0300-\u036f]/g, "")
+					.replace(/\s+/g, "_")
+					.replace(/[^a-z0-9_]/g, ""); // remove chars estranhos
+			}
+
+			function normalizeText(t) {
+				return (t || "")
+					.toLowerCase()
+					.normalize("NFD")
+					.replace(/[\u0300-\u036f]/g, "");
+			}
+
+			/* Meses PT-BR */
+			const MONTHS = {
+				jan: 0,
+				fev: 1,
+				mar: 2,
+				abr: 3,
+				mai: 4,
+				jun: 5,
+				jul: 6,
+				ago: 7,
+				set: 8,
+				out: 9,
+				nov: 10,
+				dez: 11,
+			};
+
+			function parsePtDate(str) {
+				if (!str) return null;
+				const m = (str + "").match(
+					/(\d{1,2})\s+de\s+([a-záéíóú\.]+)\s+de\s+(\d{4})/i,
+				);
+				if (!m) return null;
+				const mon = m[2].toLowerCase().replace(/\./g, "").slice(0, 3);
+				const month = MONTHS[mon];
+				if (month === undefined) return null;
+				return new Date(+m[3], month, +m[1]);
+			}
+
+			function formatDate(d) {
+				if (!d || isNaN(d)) return "—";
+				return d.toLocaleDateString("pt-BR", {
+					day: "2-digit",
+					month: "short",
+					year: "numeric",
+				});
+			}
+
+			/* ─── 3. Mapeamento de colunas CSV → campos internos ──────────── */
+			/*
+  Mapeamos TODOS os possíveis nomes de coluna (normalizados) para o campo interno.
+  Isso cobre tanto o arquivo tabela quanto o arquivo risco.
+*/
+			const COL_MAP = {
+				// Arquivo tabela (no-identification)
+				id: "id",
+				shipment: "id",
+				descricao: "descricao",
+				descri: "descricao",
+				svc: "svc",
+				shp_lg_facility_id: "svc",
+				tramo: "tramo",
+				status: "status",
+				atualizacao: "atualizacaoRaw",
+				atualizao: "atualizacaoRaw", // sem cedilha
+				// Arquivo risco
+				shipped_date: "atualizacaoRaw",
+				valor_usd: "usd",
+				hu: "hu",
+				ultimo_step: "ultimoStep",
+				ltimo_step: "ultimoStep", // variação sem acento
+				origem: "origem",
+				qtd_dias_eta: "etaDias",
+				reclamacao: "reclamacao",
+				reclamao: "reclamacao",
+				placa: "placa",
+				svc_inventario: "svcInventario",
+				svc_inventrio: "svcInventario",
+				shipped_user: "shippedUser",
+			};
+
+			function resolveCol(rawHeader) {
+				const nk = normalizeKey(rawHeader);
+				if (COL_MAP[nk]) return COL_MAP[nk];
+				// fuzzy: procura prefixo
+				for (const [alias, field] of Object.entries(COL_MAP)) {
+					if (nk.startsWith(alias) || alias.startsWith(nk))
+						return field;
+				}
+				return nk;
+			}
+
+			/* ─── 4. CSV Tabular Parser (formato principal dos arquivos) ───── */
+
+			/**
+			 * Divide uma linha CSV respeitando aspas duplas.
+			 * Ex: 'a,"b,c",d' → ['a', 'b,c', 'd']
+			 */
+			function splitCSVLine(line) {
+				const result = [];
+				let cur = "";
+				let inQuote = false;
+				for (let i = 0; i < line.length; i++) {
+					const ch = line[i];
+					if (ch === '"') {
+						if (inQuote && line[i + 1] === '"') {
+							cur += '"';
+							i++;
+						} else inQuote = !inQuote;
+					} else if (ch === "," && !inQuote) {
+						result.push(cur);
+						cur = "";
+					} else {
+						cur += ch;
+					}
+				}
+				result.push(cur);
+				return result;
+			}
+
+			/**
+			 * Detecta o separador dominante na linha de header.
+			 * Suporta , ; \t |
+			 */
+			function detectSeparator(headerLine) {
+				const counts = { ",": 0, ";": 0, "\t": 0, "|": 0 };
+				let inQ = false;
+				for (const ch of headerLine) {
+					if (ch === '"') {
+						inQ = !inQ;
+						continue;
+					}
+					if (!inQ && counts[ch] !== undefined) counts[ch]++;
+				}
+				return Object.entries(counts).sort((a, b) => b[1] - a[1])[0][0];
+			}
+
+			/**
+			 * Divide linha por qualquer separador com respeito a aspas.
+			 */
+			function splitLine(line, sep) {
+				if (sep === ",") return splitCSVLine(line);
+				const result = [];
+				let cur = "";
+				let inQuote = false;
+				for (let i = 0; i < line.length; i++) {
+					const ch = line[i];
+					if (ch === '"') {
+						inQuote = !inQuote;
+					} else if (ch === sep && !inQuote) {
+						result.push(cur);
+						cur = "";
+					} else {
+						cur += ch;
+					}
+				}
+				result.push(cur);
+				return result;
+			}
+
+			/**
+			 * PARSER PRINCIPAL — CSV Tabular com header na primeira linha.
+			 * Retorna array de objetos com campos normalizados.
+			 */
+			function parseCSVTabular(text) {
+				const lines = text
+					.split(/\r?\n/)
+					.filter((l) => l.trim() !== "");
+				if (lines.length < 2) return [];
+
+				const sep = detectSeparator(lines[0]);
+				dbg(
+					`Separador detectado: "${sep === "\t" ? "TAB" : sep}"`,
+					"info",
+				);
+
+				const rawHeaders = splitLine(lines[0], sep);
+				const headers = rawHeaders.map((h) =>
+					h.replace(/^"|"$/g, "").trim(),
+				);
+				dbg(
+					`Headers (${headers.length}): ${headers.join(" | ")}`,
+					"info",
+				);
+
+				// Mapeia índice → campo interno
+				const colFields = headers.map(resolveCol);
+				dbg(`Campos mapeados: ${colFields.join(" | ")}`, "info");
+
+				const items = [];
+				for (let i = 1; i < lines.length; i++) {
+					const line = lines[i];
+					if (!line.trim()) continue;
+					const vals = splitLine(line, sep).map((v) =>
+						v.replace(/^"|"$/g, "").trim(),
+					);
+					const raw = {};
+					for (let c = 0; c < colFields.length; c++) {
+						const field = colFields[c];
+						const value = vals[c] !== undefined ? vals[c] : "";
+						// Só preenche se ainda vazio (evita sobrescrever)
+						if (
+							!raw[field] ||
+							raw[field] === "-" ||
+							raw[field] === "null"
+						) {
+							raw[field] = value;
+						}
+					}
+					const item = buildItem(raw);
+					if (item.id) items.push(item);
+				}
+				return items;
+			}
+
+			/* ─── 5. Parser Bloco chave:valor (formato alternativo) ────────── */
+
+			function parseKVBlocks(text) {
+				const lines = text.split(/\r?\n/);
+				const items = [];
+				let current = null;
+				const KV_RE = /^([^:]+?):\s*(.*)$/;
+
+				function flush() {
+					if (current && current.id) {
+						items.push(buildItem(current));
+					}
+					current = null;
+				}
+
+				for (const line of lines) {
+					const trimmed = line.trim();
+					if (!trimmed) continue;
+					const m = trimmed.match(KV_RE);
+					if (!m) continue;
+
+					const rawKey = m[1].trim();
+					const value = m[2].trim();
+					const field = resolveCol(rawKey);
+
+					if (field === "id") {
+						if (current && current.id) flush();
+						if (!current) current = {};
+						current.id = value;
+					} else {
+						if (!current) current = {};
+						if (!current[field]) current[field] = value;
+					}
+				}
+				flush();
+				return items;
+			}
+
+			/* ─── 6. Fallback regex ─────────────────────────────────────────── */
+			function parseFallbackRegex(text) {
+				const items = [];
+				const re = /(ID|Shipment):\s*(\d{8,})/gi;
+				let m;
+				while ((m = re.exec(text)) !== null) {
+					items.push(buildItem({ id: m[2] }));
+				}
+				return items;
+			}
+
+			/* ─── 7. buildItem: raw → item padronizado ──────────────────────── */
+			function buildItem(raw) {
+				const get = (...keys) => {
+					for (const k of keys) {
+						const v = raw[k];
+						if (
+							v &&
+							v !== "-" &&
+							v !== "null" &&
+							v !== "undefined" &&
+							v.trim() !== ""
+						)
+							return v.trim();
+					}
+					return "";
+				};
+
+				const usdRaw = get("usd");
+				const etaRaw = get("etaDias");
+				const atuRaw = get("atualizacaoRaw");
+
+				const item = {
+					id: get("id"),
+					descricao: get("descricao"),
+					svc: get("svc"),
+					tramo: get("tramo"),
+					status: get("status"),
+					atualizacaoRaw: atuRaw,
+					atualizacao: parsePtDate(atuRaw),
+					usd: usdRaw ? parseFloat(usdRaw) : null,
+					hu: get("hu"),
+					ultimoStep: get("ultimoStep"),
+					origem: get("origem"),
+					etaDias: etaRaw ? parseInt(etaRaw, 10) : null,
+					reclamacao: get("reclamacao"),
+					placa: get("placa"),
+					svcInventario: get("svcInventario"),
+					shippedUser: get("shippedUser"),
+					_extra: {},
+				};
+
+				// Campos extras não mapeados
+				const knownInternals = new Set([
+					"id",
+					"descricao",
+					"svc",
+					"tramo",
+					"status",
+					"atualizacaoRaw",
+					"usd",
+					"hu",
+					"ultimoStep",
+					"origem",
+					"etaDias",
+					"reclamacao",
+					"placa",
+					"svcInventario",
+					"shippedUser",
+				]);
+				for (const [k, v] of Object.entries(raw)) {
+					if (!knownInternals.has(k) && v) item._extra[k] = v;
+				}
+
+				item._searchBlob = buildBlob(item);
+				return item;
+			}
+
+			function buildBlob(item) {
+				return normalizeText(
+					[
+						item.id,
+						item.descricao,
+						item.svc,
+						item.tramo,
+						item.status,
+						item.hu,
+						item.ultimoStep,
+						item.origem,
+						item.placa,
+						item.reclamacao,
+						item.svcInventario,
+						...Object.values(item._extra || {}),
+					]
+						.filter(Boolean)
+						.join(" "),
+				);
+			}
+
+			/* ─── 8. Orquestrador de parse ──────────────────────────────────── */
+			function parseFileContent(text, filename) {
+				dbg(
+					`─── Processando: ${filename} (${text.length} chars) ───`,
+					"info",
+				);
+
+				const lines = text.split(/\r?\n/).filter((l) => l.trim());
+				if (!lines.length) {
+					dbg("Arquivo vazio!", "err");
+					return [];
+				}
+
+				// Heurística: tem header com múltiplos campos separados por vírgula/ponto-vírgula?
+				const firstLine = lines[0];
+				const sep = detectSeparator(firstLine);
+				const firstCols = splitLine(firstLine, sep).length;
+
+				dbg(
+					`Primeira linha tem ${firstCols} colunas com sep="${sep === "\t" ? "TAB" : sep}"`,
+					"info",
+				);
+				dbg(`Amostra: ${firstLine.slice(0, 120)}`, "info");
+
+				let items = [];
+
+				// Estratégia A: CSV tabular (header com ≥2 colunas conhecidas)
+				if (firstCols >= 2) {
+					dbg("→ Tentando CSV Tabular...", "info");
+					items = parseCSVTabular(text);
+					dbg(
+						`CSV Tabular: ${items.length} itens`,
+						items.length > 0 ? "ok" : "warn",
+					);
+				}
+
+				// Estratégia B: Blocos chave:valor
+				if (items.length === 0) {
+					dbg("→ Tentando Blocos KV...", "info");
+					items = parseKVBlocks(text);
+					dbg(
+						`Blocos KV: ${items.length} itens`,
+						items.length > 0 ? "ok" : "warn",
+					);
+				}
+
+				// Estratégia C: Fallback regex
+				if (items.length === 0) {
+					dbg("→ Fallback Regex...", "warn");
+					items = parseFallbackRegex(text);
+					dbg(
+						`Fallback Regex: ${items.length} itens`,
+						items.length > 0 ? "ok" : "err",
+					);
+				}
+
+				dbg(
+					`Total parseado de "${filename}": ${items.length} itens`,
+					items.length > 0 ? "ok" : "err",
+				);
+
+				// Amostras para debug
+				if (items.length > 0) {
+					const sample = items[0];
+					dbg(
+						`Amostra[0] id="${sample.id}" svc="${sample.svc}" tramo="${sample.tramo}" status="${sample.status}" usd="${sample.usd}" desc="${(sample.descricao || "").slice(0, 40)}"`,
+						"ok",
+					);
+				}
+
+				return items;
+			}
+
+			/* ─── 9. Store / Merge ──────────────────────────────────────────── */
+			const STORE_KEY = "ps_items_v4";
+			const FILTERS_KEY = "ps_filters_v4";
+			const THEME_KEY = "ps_theme_v1";
+
+			let allItems = [];
+			let itemsMap = new Map();
+			let dataSource = "empty";
+			let savedAt = null;
+
+			function mergeIntoExisting(existing, incoming) {
+				const fields = [
+					"descricao",
+					"svc",
+					"tramo",
+					"status",
+					"atualizacaoRaw",
+					"hu",
+					"ultimoStep",
+					"origem",
+					"reclamacao",
+					"placa",
+					"svcInventario",
+					"shippedUser",
+				];
+				for (const f of fields) {
+					if (
+						incoming[f] &&
+						(!existing[f] ||
+							existing[f] === "" ||
+							existing[f] === "null")
+					) {
+						existing[f] = incoming[f];
+					}
+				}
+				if (
+					incoming.usd !== null &&
+					!isNaN(incoming.usd) &&
+					(existing.usd === null || isNaN(existing.usd))
+				) {
+					existing.usd = incoming.usd;
+				}
+				if (
+					incoming.etaDias !== null &&
+					!isNaN(incoming.etaDias) &&
+					(existing.etaDias === null || isNaN(existing.etaDias))
+				) {
+					existing.etaDias = incoming.etaDias;
+				}
+				if (!existing.atualizacao && incoming.atualizacaoRaw) {
+					existing.atualizacao = parsePtDate(incoming.atualizacaoRaw);
+				}
+				for (const [k, v] of Object.entries(incoming._extra || {})) {
+					if (v && !existing._extra[k]) existing._extra[k] = v;
+				}
+				existing._searchBlob = buildBlob(existing);
+			}
+
+			function ingestItems(newItems) {
+				let added = 0,
+					merged = 0;
+				for (const item of newItems) {
+					if (!item.id) continue;
+					if (itemsMap.has(item.id)) {
+						mergeIntoExisting(itemsMap.get(item.id), item);
+						merged++;
+					} else {
+						if (!item._extra) item._extra = {};
+						itemsMap.set(item.id, item);
+						allItems.push(item);
+						added++;
+					}
+				}
+				return { added, merged };
+			}
+
+			function saveItems() {
+				try {
+					localStorage.setItem(
+						STORE_KEY,
+						JSON.stringify({
+							items: allItems,
+							savedAt: new Date().toISOString(),
+						}),
+					);
+					dataSource = "cache";
+					savedAt = new Date();
+					dbg(`Cache salvo: ${allItems.length} itens`, "ok");
+				} catch (e) {
+					dbg(`Erro ao salvar cache: ${e.message}`, "err");
+					toast(
+						"Dados muito grandes para cache. Ficam em memória.",
+						"warn",
+					);
+					dataSource = "memory";
+				}
+				updateCacheBadge();
+			}
+
+			function loadItems() {
+				try {
+					const raw = localStorage.getItem(STORE_KEY);
+					if (!raw) return false;
+					const payload = JSON.parse(raw);
+					if (!payload.items || !payload.items.length) return false;
+					allItems = payload.items;
+					itemsMap = new Map();
+					for (const it of allItems) {
+						it.atualizacao = it.atualizacao
+							? new Date(it.atualizacao)
+							: parsePtDate(it.atualizacaoRaw);
+						if (!it._extra) it._extra = {};
+						it._searchBlob = buildBlob(it);
+						itemsMap.set(it.id, it);
+					}
+					savedAt = payload.savedAt
+						? new Date(payload.savedAt)
+						: null;
+					dataSource = "cache";
+					dbg(`Cache restaurado: ${allItems.length} itens`, "ok");
+					return true;
+				} catch (e) {
+					dbg(`Erro ao carregar cache: ${e.message}`, "err");
+					return false;
+				}
+			}
+
+			function clearItems() {
+				allItems = [];
+				itemsMap = new Map();
+				dataSource = "empty";
+				savedAt = null;
+				localStorage.removeItem(STORE_KEY);
+				updateCacheBadge();
+			}
+
+			/* ─── 10. Filtros / Estado ──────────────────────────────────────── */
+			const state = {
+				globalSearch: "",
+				quickSearch: "",
+				svcSet: new Set(),
+				tramoSet: new Set(),
+				statusSet: new Set(),
+				dateFrom: null,
+				dateTo: null,
+				usdMin: null,
+				usdMax: null,
+				sort: "relevance",
+				page: 1,
+				pageSize: 24,
+			};
+
+			function saveFilters() {
+				localStorage.setItem(
+					FILTERS_KEY,
+					JSON.stringify({
+						globalSearch: state.globalSearch,
+						quickSearch: state.quickSearch,
+						svcSet: [...state.svcSet],
+						tramoSet: [...state.tramoSet],
+						statusSet: [...state.statusSet],
+						dateFrom: state.dateFrom,
+						dateTo: state.dateTo,
+						usdMin: state.usdMin,
+						usdMax: state.usdMax,
+						sort: state.sort,
+						pageSize: state.pageSize,
+					}),
+				);
+			}
+
+			function loadFilters() {
+				try {
+					const p = JSON.parse(
+						localStorage.getItem(FILTERS_KEY) || "{}",
+					);
+					if (p.globalSearch) state.globalSearch = p.globalSearch;
+					if (p.quickSearch) state.quickSearch = p.quickSearch;
+					if (p.svcSet) state.svcSet = new Set(p.svcSet);
+					if (p.tramoSet) state.tramoSet = new Set(p.tramoSet);
+					if (p.statusSet) state.statusSet = new Set(p.statusSet);
+					if (p.dateFrom) state.dateFrom = p.dateFrom;
+					if (p.dateTo) state.dateTo = p.dateTo;
+					state.usdMin = p.usdMin ?? null;
+					state.usdMax = p.usdMax ?? null;
+					state.sort = p.sort || "relevance";
+					state.pageSize = p.pageSize || 24;
+				} catch (e) {}
+			}
+
+			/* ─── 11. Busca avançada ────────────────────────────────────────── */
+			function parseQuery(raw) {
+				const tokens = [];
+				let q = raw;
+				// field:value
+				const fieldRe = /(\w+):"([^"]+)"|(\w+):(\S+)/g;
+				const knownF = new Set([
+					"id",
+					"svc",
+					"tramo",
+					"status",
+					"hu",
+					"origem",
+					"placa",
+					"eta",
+				]);
+				let fm;
+				while ((fm = fieldRe.exec(raw)) !== null) {
+					const field = (fm[1] || fm[3]).toLowerCase();
+					const value = (fm[2] || fm[4]).toLowerCase();
+					if (knownF.has(field)) {
+						tokens.push({ type: "field", field, value });
+						q = q.replace(fm[0], "");
+					}
+				}
+				// "exact phrase"
+				const phraseRe = /"([^"]+)"/g;
+				let pm;
+				while ((pm = phraseRe.exec(q)) !== null) {
+					tokens.push({ type: "must", value: normalizeText(pm[1]) });
+					q = q.replace(pm[0], "");
+				}
+				// words
+				for (const w of q.split(/\s+/).filter(Boolean)) {
+					if (w.startsWith("-") && w.length > 1)
+						tokens.push({
+							type: "not",
+							value: normalizeText(w.slice(1)),
+						});
+					else tokens.push({ type: "must", value: normalizeText(w) });
+				}
+				return tokens.filter((t) => t.value);
+			}
+
+			function matchesQuery(item, tokens) {
+				if (!tokens.length) return true;
+				const blob = item._searchBlob || "";
+				for (const tok of tokens) {
+					if (tok.type === "must") {
+						if (!blob.includes(tok.value)) return false;
+					} else if (tok.type === "not") {
+						if (blob.includes(tok.value)) return false;
+					} else if (tok.type === "field") {
+						const fv = normalizeText(
+							String(
+								item[tok.field] ||
+									item._extra?.[tok.field] ||
+									"",
+							),
+						);
+						if (!fv.includes(tok.value)) return false;
+					}
+				}
+				return true;
+			}
+
+			/* ─── 12. Filtragem & ordenação ─────────────────────────────────── */
+			function getFiltered() {
+				const gTokens = parseQuery(state.globalSearch);
+				const qText = normalizeText(state.quickSearch);
+				return allItems.filter((item) => {
+					if (gTokens.length && !matchesQuery(item, gTokens))
+						return false;
+					if (qText && !item._searchBlob.includes(qText))
+						return false;
+					if (state.svcSet.size && !state.svcSet.has(item.svc))
+						return false;
+					if (state.tramoSet.size && !state.tramoSet.has(item.tramo))
+						return false;
+					if (
+						state.statusSet.size &&
+						!state.statusSet.has(item.status)
+					)
+						return false;
+					if (state.dateFrom && item.atualizacao) {
+						if (item.atualizacao < new Date(state.dateFrom))
+							return false;
+					}
+					if (state.dateTo && item.atualizacao) {
+						const dt = new Date(state.dateTo);
+						dt.setHours(23, 59, 59);
+						if (item.atualizacao > dt) return false;
+					}
+					if (
+						state.usdMin !== null &&
+						item.usd !== null &&
+						item.usd < state.usdMin
+					)
+						return false;
+					if (
+						state.usdMax !== null &&
+						item.usd !== null &&
+						item.usd > state.usdMax
+					)
+						return false;
+					return true;
+				});
+			}
+
+			function sortItems(items) {
+				const s = state.sort;
+				const cp = [...items];
+				const ts = (i) => (i.atualizacao ? i.atualizacao.getTime() : 0);
+				if (s === "date_desc") cp.sort((a, b) => ts(b) - ts(a));
+				else if (s === "date_asc") cp.sort((a, b) => ts(a) - ts(b));
+				else if (s === "id_asc")
+					cp.sort((a, b) => a.id.localeCompare(b.id));
+				else if (s === "id_desc")
+					cp.sort((a, b) => b.id.localeCompare(a.id));
+				else if (s === "desc_az")
+					cp.sort((a, b) =>
+						a.descricao.localeCompare(b.descricao, "pt-BR"),
+					);
+				else if (s === "usd_desc")
+					cp.sort((a, b) => (b.usd || 0) - (a.usd || 0));
+				else if (s === "usd_asc")
+					cp.sort((a, b) => (a.usd || 0) - (b.usd || 0));
+				else if (s === "eta_desc")
+					cp.sort((a, b) => (b.etaDias || 0) - (a.etaDias || 0));
+				return cp;
+			}
+
+			/* ─── 13. Render helpers ─────────────────────────────────────────── */
+			function updateCacheBadge() {
+				const badge = $("#cacheBadge");
+				badge.className = "";
+				if (dataSource === "cache" && allItems.length) {
+					const t = savedAt
+						? savedAt.toLocaleString("pt-BR", {
+								day: "2-digit",
+								month: "2-digit",
+								hour: "2-digit",
+								minute: "2-digit",
+							})
+						: "—";
+					badge.textContent = `✅ Cache ativo • ${allItems.length} itens • ${t}`;
+					badge.classList.add("active");
+				} else if (dataSource === "memory" && allItems.length) {
+					badge.textContent = `🟡 Dados em memória • ${allItems.length} itens`;
+					badge.classList.add("memory");
+				} else {
+					badge.textContent = "Cache: vazio";
+				}
+			}
+
+			function buildChecklist(
+				containerId,
+				fieldName,
+				activeSet,
+				onChange,
+			) {
+				const wrap = $(`#${containerId}`);
+				if (!wrap) return;
+				const counts = {};
+				for (const item of allItems) {
+					const v = item[fieldName] || "";
+					if (v) counts[v] = (counts[v] || 0) + 1;
+				}
+				wrap.innerHTML = "";
+				const values = Object.keys(counts).sort();
+				for (const v of values) {
+					const lbl = document.createElement("label");
+					lbl.innerHTML = `
+      <input type="checkbox" value="${v}" ${activeSet.has(v) ? "checked" : ""}>
+      <span>${v || "(vazio)"}</span>
+      <span class="checklist-count">${counts[v]}</span>`;
+					lbl.querySelector("input").addEventListener(
+						"change",
+						function () {
+							this.checked
+								? activeSet.add(v)
+								: activeSet.delete(v);
+							state.page = 1;
+							onChange();
+						},
+					);
+					wrap.appendChild(lbl);
+				}
+				if (!values.length)
+					wrap.innerHTML =
+						'<span style="font-size:12px;color:var(--text3)">Nenhum valor</span>';
+			}
+
+			function rebuildChecklists() {
+				const refresh = () => {
+					saveFilters();
+					render();
+				};
+				buildChecklist("svcChecklist", "svc", state.svcSet, refresh);
+				buildChecklist(
+					"tramoChecklist",
+					"tramo",
+					state.tramoSet,
+					refresh,
+				);
+				buildChecklist(
+					"statusChecklist",
+					"status",
+					state.statusSet,
+					refresh,
+				);
+			}
+
+			function updateChips() {
+				const chips = $("#activeChips");
+				const section = $("#chipsSection");
+				chips.innerHTML = "";
+				const all = [];
+				if (state.globalSearch)
+					all.push({
+						label: `🔍 "${state.globalSearch}"`,
+						clear: () => {
+							state.globalSearch = "";
+							$("#globalSearch").value = "";
+						},
+					});
+				if (state.quickSearch)
+					all.push({
+						label: `⚡ "${state.quickSearch}"`,
+						clear: () => {
+							state.quickSearch = "";
+							$("#quickSearch").value = "";
+						},
+					});
+				for (const v of state.svcSet)
+					all.push({
+						label: `SVC: ${v}`,
+						clear: () => {
+							state.svcSet.delete(v);
+							rebuildChecklists();
+						},
+					});
+				for (const v of state.tramoSet)
+					all.push({
+						label: `Tramo: ${v}`,
+						clear: () => {
+							state.tramoSet.delete(v);
+							rebuildChecklists();
+						},
+					});
+				for (const v of state.statusSet)
+					all.push({
+						label: `Status: ${v}`,
+						clear: () => {
+							state.statusSet.delete(v);
+							rebuildChecklists();
+						},
+					});
+				if (state.dateFrom)
+					all.push({
+						label: `De: ${state.dateFrom}`,
+						clear: () => {
+							state.dateFrom = null;
+							$("#dateFrom").value = "";
+						},
+					});
+				if (state.dateTo)
+					all.push({
+						label: `Até: ${state.dateTo}`,
+						clear: () => {
+							state.dateTo = null;
+							$("#dateTo").value = "";
+						},
+					});
+				if (state.usdMin !== null)
+					all.push({
+						label: `USD ≥ ${state.usdMin}`,
+						clear: () => {
+							state.usdMin = null;
+							$("#usdMin").value = "";
+						},
+					});
+				if (state.usdMax !== null)
+					all.push({
+						label: `USD ≤ ${state.usdMax}`,
+						clear: () => {
+							state.usdMax = null;
+							$("#usdMax").value = "";
+						},
+					});
+				section.style.display = all.length ? "" : "none";
+				for (const c of all) {
+					const chip = document.createElement("div");
+					chip.className = "chip";
+					chip.innerHTML = `${c.label}<button title="Remover">×</button>`;
+					chip.querySelector("button").addEventListener(
+						"click",
+						() => {
+							c.clear();
+							state.page = 1;
+							saveFilters();
+							updateChips();
+							render();
+						},
+					);
+					chips.appendChild(chip);
+				}
+			}
+
+			/* ─── 14. Render Cards ───────────────────────────────────────────── */
+			function etaClass(d) {
+				if (d === null || isNaN(d)) return "";
+				if (d >= 15) return "eta-high";
+				if (d >= 7) return "eta-mid";
+				return "";
+			}
+
+			function renderCard(item) {
+				const usdStr =
+					item.usd !== null && !isNaN(item.usd)
+						? `$${item.usd.toFixed(2)}`
+						: "—";
+				const etaStr =
+					item.etaDias !== null && !isNaN(item.etaDias)
+						? `${item.etaDias}d`
+						: "—";
+				const isRisk = item.etaDias >= 15 || item.usd > 100;
+				const desc = item.descricao || "";
+
+				const card = document.createElement("div");
+				card.className = "card";
+				card.setAttribute("role", "button");
+				card.setAttribute("tabindex", "0");
+				card.setAttribute("aria-label", `Pacote ${item.id}`);
+
+				card.innerHTML = `
+    <div class="card-header">
+      <span class="card-id">#${item.id}</span>
+      <div class="card-badges">
+        ${item.svc ? `<span class="badge badge-svc">${item.svc}</span>` : ""}
+        ${item.tramo ? `<span class="badge badge-tramo">${item.tramo}</span>` : ""}
+        ${
+			item.status && item.status !== "null" && item.status !== ""
+				? `<span class="badge badge-status">${item.status}</span>`
+				: ""
+		}
+        ${isRisk ? `<span class="badge badge-risk">⚠ Risco</span>` : ""}
+      </div>
+    </div>
+    <div class="card-desc ${desc ? "" : "empty"}">${desc || "Sem descrição"}</div>
+    <div class="card-meta">
+      <div class="card-meta-item">
+        <span class="card-meta-label">Valor USD</span>
+        <span class="card-meta-value usd">${usdStr}</span>
+      </div>
+      <div class="card-meta-item">
+        <span class="card-meta-label">ETA (dias)</span>
+        <span class="card-meta-value ${etaClass(item.etaDias)}">${etaStr}</span>
+      </div>
+      <div class="card-meta-item">
+        <span class="card-meta-label">Último Step</span>
+        <span class="card-meta-value">${item.ultimoStep || "—"}</span>
+      </div>
+      <div class="card-meta-item">
+        <span class="card-meta-label">Origem</span>
+        <span class="card-meta-value">${item.origem || "—"}</span>
+      </div>
+      ${item.placa ? `<div class="card-meta-item"><span class="card-meta-label">Placa</span><span class="card-meta-value">${item.placa}</span></div>` : ""}
+      ${item.hu ? `<div class="card-meta-item"><span class="card-meta-label">HU</span><span class="card-meta-value" style="font-size:11px">${item.hu}</span></div>` : ""}
+    </div>
+    <div class="card-footer">
+      <span class="card-date">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        ${formatDate(item.atualizacao)}
+      </span>
+      <span class="card-click-hint">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        Abrir & copiar
+      </span>
+    </div>`;
+
+				const activate = () => {
+					if (!item.id) {
+						toast("ID não encontrado.", "error");
+						return;
+					}
+					navigator.clipboard
+						.writeText(item.id)
+						.then(() =>
+							toast(`ID <b>${item.id}</b> copiado!`, "success"),
+						)
+						.catch(() => {
+							try {
+								const ta = Object.assign(
+									document.createElement("textarea"),
+									{
+										value: item.id,
+										style: "position:fixed;opacity:0",
+									},
+								);
+								document.body.appendChild(ta);
+								ta.select();
+								document.execCommand("copy");
+								ta.remove();
+								toast(
+									`ID ${item.id} copiado! (fallback)`,
+									"success",
+								);
+							} catch (e) {
+								toast("Falha ao copiar ID.", "error");
+							}
+						});
+					window.open(
+						`https://envios.adminml.com/logistics/package-management/package/${item.id}`,
+						"_blank",
+						"noopener",
+					);
+				};
+				card.addEventListener("click", activate);
+				card.addEventListener("keydown", (e) => {
+					if (e.key === "Enter" || e.key === " ") {
+						e.preventDefault();
+						activate();
+					}
+				});
+				return card;
+			}
+
+			/* ─── 15. Render principal ───────────────────────────────────────── */
+			function render() {
+				const filtered = getFiltered();
+				const sorted = sortItems(filtered);
+				const ps = state.pageSize;
+				const start = (state.page - 1) * ps;
+				const page = sorted.slice(start, start + ps);
+
+				// Count
+				const rc = $("#resultCount");
+				if (!allItems.length) {
+					rc.innerHTML = "Nenhum item carregado";
+					$("#debugToggle").style.display = "none";
+				} else {
+					rc.innerHTML = `<span>${filtered.length}</span> de ${allItems.length} itens`;
+					if (filtered.length !== allItems.length)
+						rc.innerHTML += " (filtrado)";
+					$("#debugToggle").style.display = "inline";
+				}
+
+				// Grid
+				const grid = $("#cardsGrid");
+				grid.innerHTML = "";
+
+				if (!allItems.length) {
+					const dz = document.createElement("div");
+					dz.id = "dropZone";
+					dz.innerHTML = `<div class="drop-icon">📂</div><h3>Nenhum dado carregado</h3><p>Arraste arquivos <b>.csv</b> ou <b>.txt</b> aqui, ou clique em <b>Importar</b>.</p>`;
+					setupDropZone(dz);
+					grid.appendChild(dz);
+				} else if (!filtered.length) {
+					const empty = document.createElement("div");
+					empty.id = "emptyState";
+					empty.innerHTML = `<span class="empty-icon">🔎</span><h3>Nenhum resultado</h3><p>Ajuste os filtros ou o termo de busca.</p>`;
+					grid.appendChild(empty);
+				} else {
+					for (const item of page) grid.appendChild(renderCard(item));
+				}
+
+				renderPagination(filtered.length);
+				updateChips();
+				updateCacheBadge();
+			}
+
+			/* ─── 16. Paginação ─────────────────────────────────────────────── */
+			function renderPagination(total) {
+				const totalPages = Math.ceil(total / state.pageSize);
+				const pg = $("#pagination");
+				pg.innerHTML = "";
+				if (totalPages <= 1) return;
+
+				const btn = (label, page, disabled = false, active = false) => {
+					const b = document.createElement("button");
+					b.className = "page-btn" + (active ? " active" : "");
+					b.disabled = disabled;
+					b.innerHTML = label;
+					if (!disabled)
+						b.addEventListener("click", () => {
+							state.page = page;
+							render();
+							window.scrollTo({ top: 0, behavior: "smooth" });
+						});
+					return b;
+				};
+
+				pg.appendChild(btn("«", 1, state.page === 1));
+				pg.appendChild(btn("‹", state.page - 1, state.page === 1));
+
+				const delta = 2;
+				const range = [];
+				for (
+					let i = Math.max(1, state.page - delta);
+					i <= Math.min(totalPages, state.page + delta);
+					i++
+				)
+					range.push(i);
+
+				if (range[0] > 1) {
+					pg.appendChild(btn("1", 1));
+					if (range[0] > 2) {
+						const el = document.createElement("span");
+						el.textContent = "…";
+						el.style.cssText = "padding:0 4px;color:var(--text3)";
+						pg.appendChild(el);
+					}
+				}
+				for (const p of range)
+					pg.appendChild(btn(p, p, false, p === state.page));
+				if (range[range.length - 1] < totalPages) {
+					if (range[range.length - 1] < totalPages - 1) {
+						const el = document.createElement("span");
+						el.textContent = "…";
+						el.style.cssText = "padding:0 4px;color:var(--text3)";
+						pg.appendChild(el);
+					}
+					pg.appendChild(btn(totalPages, totalPages));
+				}
+
+				pg.appendChild(
+					btn("›", state.page + 1, state.page === totalPages),
+				);
+				pg.appendChild(btn("»", totalPages, state.page === totalPages));
+
+				const jw = document.createElement("div");
+				jw.id = "pageJumpWrap";
+				const ji = document.createElement("input");
+				ji.type = "number";
+				ji.id = "pageJump";
+				ji.min = 1;
+				ji.max = totalPages;
+				ji.value = state.page;
+				ji.addEventListener("keydown", (e) => {
+					if (e.key === "Enter") {
+						const p = Math.min(
+							Math.max(1, parseInt(ji.value, 10)),
+							totalPages,
+						);
+						if (!isNaN(p)) {
+							state.page = p;
+							render();
+							window.scrollTo({ top: 0, behavior: "smooth" });
+						}
+					}
+				});
+				jw.appendChild(document.createTextNode("Ir para "));
+				jw.appendChild(ji);
+				pg.appendChild(jw);
+			}
+
+			/* ─── 17. Drop Zone ──────────────────────────────────────────────── */
+			function setupDropZone(el) {
+				el.addEventListener("dragover", (e) => {
+					e.preventDefault();
+					el.classList.add("drag-over");
+				});
+				el.addEventListener("dragleave", () =>
+					el.classList.remove("drag-over"),
+				);
+				el.addEventListener("drop", (e) => {
+					e.preventDefault();
+					el.classList.remove("drag-over");
+					handleFiles(e.dataTransfer.files);
+				});
+				el.addEventListener("click", () => $("#fileInput").click());
+			}
+			document.addEventListener("dragover", (e) => e.preventDefault());
+			document.addEventListener("drop", (e) => {
+				e.preventDefault();
+				if (e.dataTransfer.files.length)
+					handleFiles(e.dataTransfer.files);
+			});
+
+			/* ─── 18. Import handler ─────────────────────────────────────────── */
+			async function handleFiles(files) {
+				if (!files || !files.length) return;
+				setProgress(10);
+				let totalAdded = 0,
+					totalMerged = 0;
+				const arr = Array.from(files);
+
+				for (let i = 0; i < arr.length; i++) {
+					const file = arr[i];
+					try {
+						const text = await file.text();
+						dbg(
+							`Lendo arquivo: ${file.name} (${file.size} bytes)`,
+							"info",
+						);
+						const parsed = parseFileContent(text, file.name);
+						const { added, merged } = ingestItems(parsed);
+						totalAdded += added;
+						totalMerged += merged;
+						dbg(
+							`${file.name}: +${added} novos, ${merged} atualizados`,
+							"ok",
+						);
+					} catch (e) {
+						dbg(`ERRO em ${file.name}: ${e.message}`, "err");
+						toast(`Erro ao ler: ${file.name}`, "error");
+					}
+					setProgress(10 + (i + 1) * (80 / arr.length));
+				}
+
+				setProgress(100);
+				dbg(`Total em memória: ${allItems.length} itens`, "ok");
+				dataSource = "memory";
+				saveItems();
+				rebuildChecklists();
+				restoreFilterInputs();
+				state.page = 1;
+				render();
+
+				// Mostra debug automaticamente se der 0
+				if (totalAdded === 0 && totalMerged === 0) {
+					$("#debugPanel").classList.add("show");
+					renderDebug();
+					toast(
+						`⚠️ Nenhum item carregado. Veja o painel de debug abaixo.`,
+						"warn",
+						6000,
+					);
+				} else {
+					toast(
+						`✅ ${arr.length} arquivo(s): +${totalAdded} novos, ${totalMerged} atualizados. Total: ${allItems.length}`,
+						"success",
+						5000,
+					);
+				}
+			}
+
+			/* ─── 19. Restore UI ─────────────────────────────────────────────── */
+			function restoreFilterInputs() {
+				$("#globalSearch").value = state.globalSearch;
+				$("#quickSearch").value = state.quickSearch;
+				$("#dateFrom").value = state.dateFrom || "";
+				$("#dateTo").value = state.dateTo || "";
+				$("#usdMin").value = state.usdMin !== null ? state.usdMin : "";
+				$("#usdMax").value = state.usdMax !== null ? state.usdMax : "";
+				$("#sortSelect").value = state.sort;
+				$("#pageSize").value = state.pageSize;
+			}
+
+			/* ─── 20. Event Listeners ────────────────────────────────────────── */
+			let _sDebounce, _qDebounce, _usdDebounce;
+
+			$("#globalSearch").addEventListener("input", function () {
+				clearTimeout(_sDebounce);
+				_sDebounce = setTimeout(() => {
+					state.globalSearch = this.value.trim();
+					state.page = 1;
+					saveFilters();
+					render();
+				}, 280);
+			});
+			$("#quickSearch").addEventListener("input", function () {
+				clearTimeout(_qDebounce);
+				_qDebounce = setTimeout(() => {
+					state.quickSearch = this.value.trim();
+					state.page = 1;
+					saveFilters();
+					render();
+				}, 280);
+			});
+			$("#sortSelect").addEventListener("change", function () {
+				state.sort = this.value;
+				state.page = 1;
+				saveFilters();
+				render();
+			});
+			$("#pageSize").addEventListener("change", function () {
+				state.pageSize = +this.value;
+				state.page = 1;
+				saveFilters();
+				render();
+			});
+			$("#dateFrom").addEventListener("change", function () {
+				state.dateFrom = this.value || null;
+				state.page = 1;
+				saveFilters();
+				render();
+			});
+			$("#dateTo").addEventListener("change", function () {
+				state.dateTo = this.value || null;
+				state.page = 1;
+				saveFilters();
+				render();
+			});
+			$("#usdMin").addEventListener("input", () => {
+				clearTimeout(_usdDebounce);
+				_usdDebounce = setTimeout(() => {
+					state.usdMin =
+						$("#usdMin").value !== "" ? +$("#usdMin").value : null;
+					state.page = 1;
+					saveFilters();
+					render();
+				}, 350);
+			});
+			$("#usdMax").addEventListener("input", () => {
+				clearTimeout(_usdDebounce);
+				_usdDebounce = setTimeout(() => {
+					state.usdMax =
+						$("#usdMax").value !== "" ? +$("#usdMax").value : null;
+					state.page = 1;
+					saveFilters();
+					render();
+				}, 350);
+			});
+
+			$("#fileInput").addEventListener("change", function () {
+				handleFiles(this.files);
+				this.value = "";
+			});
+			$("#clearBtn").addEventListener("click", () => {
+				if (!allItems.length) {
+					toast("Não há dados para limpar.", "info");
+					return;
+				}
+				if (!confirm(`Limpar ${allItems.length} itens e cache?`))
+					return;
+				clearItems();
+				rebuildChecklists();
+				render();
+				toast("Dados limpos.", "success");
+			});
+			$("#resetFiltersBtn").addEventListener("click", () => {
+				state.globalSearch = "";
+				state.quickSearch = "";
+				state.svcSet.clear();
+				state.tramoSet.clear();
+				state.statusSet.clear();
+				state.dateFrom = null;
+				state.dateTo = null;
+				state.usdMin = null;
+				state.usdMax = null;
+				state.sort = "relevance";
+				state.page = 1;
+				restoreFilterInputs();
+				rebuildChecklists();
+				saveFilters();
+				render();
+				toast("Filtros resetados.", "info");
+			});
+
+			function applyTheme(t) {
+				document.documentElement.setAttribute("data-theme", t);
+				const ic = $("#themeIcon");
+				ic.innerHTML =
+					t === "dark"
+						? '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>'
+						: '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+				localStorage.setItem(THEME_KEY, t);
+			}
+			$("#themeBtn").addEventListener("click", () => {
+				applyTheme(
+					document.documentElement.getAttribute("data-theme") ===
+						"dark"
+						? "light"
+						: "dark",
+				);
+			});
+
+			/* ─── 21. Init ───────────────────────────────────────────────────── */
+			(function init() {
+				applyTheme(localStorage.getItem(THEME_KEY) || "light");
+				loadFilters();
+				const hasCache = loadItems();
+				restoreFilterInputs();
+				rebuildChecklists();
+				render();
+				if (hasCache)
+					toast(
+						`Cache restaurado: ${allItems.length} itens.`,
+						"info",
+						3000,
+					);
+			})();
+		</script>
+	</body>
+</html>
