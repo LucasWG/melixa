@@ -13,4 +13,4 @@ FROM
 		cast(t1.SHP_ORD_EXTERNAL_REFERENCE_ID as integer) = t3.SHP_SHIPMENT_ID
 	)
 WHERE
-	t2.SHP_SHIPMENT_ID IN (46718161534)
+	t2.SHP_SHIPMENT_ID IN (ID_PACOTES) -- Substitua por uma lista de IDs de pacotes
