@@ -7,9 +7,13 @@
 // @match        https://shipping-bo.adminml.com/sauron/shipments/shipment/*
 // @grant        none
 // @run-at       document-idle
-// @updateURL    https://gist.github.com/LucasWG/a5630b235cd956a66d6ed6eb56d9688a/raw/melitools.user.js
-// @downloadURL  https://gist.github.com/LucasWG/a5630b235cd956a66d6ed6eb56d9688a/raw/melitools.user.js
+// @updateURL    https://github.com/LucasRepML/melixa/raw/refs/heads/main/AUTOMA%C3%87%C3%95ES/Sauron%20-%20Auto%20Scroll%20to%20Shipment-1.2.1.user.js
+// @downloadURL  https://github.com/LucasRepML/melixa/raw/refs/heads/main/AUTOMA%C3%87%C3%95ES/Sauron%20-%20Auto%20Scroll%20to%20Shipment-1.2.1.user.js
 // ==/UserScript==
+
+
+
+
 
 (function () {
 	'use strict';
