@@ -1,0 +1,40 @@
+Periodo 05/04/2026
+
+Line Haul - 2,21% - 178 Pcts
+Last Mile - 1,49% - 120 Pcts
+SVC - 0,73% - 59 Pcts
+Seller - 0,55% - 44 Pcts
+Route Change - 0,26% - 21 Pcts
+FBM - 0,19% - 15 Pcts
+First Mile - 0,17% - 14 Pcts
+OP Consolidation - 0,09% - 7 Pcts
+XD - 0,07% - 6 Pcts
+LH AIR - 0,04% - 3 Pcts
+Missing Checkpoint - 0,04% - 3 Pcts
+Place - 0,02% - 2 Pcts
+Handshake FM - 0,01% - 1 Pcts
+Null - 0,00% - 0 Pcts
+XPT/LM - 0,00% - 0 Pcts
+
+Delay Total - 5,88% - 473 Pcts
+
+
+Periodo 06/04/2026
+
+Last Mile - 2,94% - 875 Pcts
+SVC - 0,64% - 190 Pcts
+Line Haul - 0,45% - 134 Pcts
+Route Change - 0,27% - 80 Pcts
+Seller - 0,24% - 73 Pcts
+XD - 0,15% - 46 Pcts
+FBM - 0,15% - 44 Pcts
+First Mile - 0,09% - 26 Pcts
+OP Consolidation - 0,08% - 25 Pcts
+Place - 0,04% - 12 Pcts
+LH AIR - 0,02% - 5 Pcts
+Missing Checkpoint - 0,01% - 4 Pcts
+Null - 0,00% - 0 Pcts
+Handshake - 0,00% - 0 Pcts
+XPT/LM - 0,00% - 0 Pcts
+
+Delay Total - 5,08% - 1.514 Pcts
