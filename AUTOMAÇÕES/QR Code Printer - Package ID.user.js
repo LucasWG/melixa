@@ -763,99 +763,6 @@
 	}
 
 	// =========================================================================
-	// DEBUG MODAL (Alt + D)
-	// =========================================================================
-	function showDebugModal() {
-		const debugData = []
-		debugData.push(`URL: ${window.location.href}`)
-		debugData.push(`Time: ${new Date().toISOString()}`)
-		
-		const testIdBtn = document.querySelector(`[data-testid="${PAGE_TOKENS.BTN_REPRINT_LABEL}"]`)
-		debugData.push(`\n[data-testid="BTN_REPRINT_LABEL"]: ${testIdBtn ? 'Encontrado' : 'NÃO ENCONTRADO'}`)
-		if (testIdBtn) {
-			const rect = testIdBtn.getBoundingClientRect()
-			debugData.push(` - Rect: w=${rect.width}, h=${rect.height}, t=${rect.top}`)
-			debugData.push(` - Text: "${testIdBtn.textContent.trim()}"`)
-		}
-
-		debugData.push(`\nBotões (<button>, <a>, [role="button"]) na tela:`)
-		const candidates = Array.from(document.querySelectorAll('button, a, [role="button"], [class*="button"], [class*="btn"]'))
-		debugData.push(`Total de botões/links encontrados: ${candidates.length}`)
-		
-		const filtered = candidates.filter(el => {
-			const txt = el.textContent.trim()
-			return txt && txt.length > 0 && txt.length < 50
-		})
-		
-		filtered.forEach((el, index) => {
-			const rect = el.getBoundingClientRect()
-			const text = el.textContent.replace(/\s+/g, ' ').trim()
-			const tag = el.tagName.toLowerCase()
-			const classes = el.className?.toString?.() || ''
-			debugData.push(`[${index}] <${tag}> | text: "${text}" | classes: "${classes}" | w:${rect.width} h:${rect.height}`)
-		})
-
-		const textToCopy = debugData.join('\n')
-
-		const overlay = document.createElement('div')
-		Object.assign(overlay.style, {
-			position: 'fixed', top: '0', left: '0', width: '100%', height: '100%',
-			background: 'rgba(0,0,0,0.8)', zIndex: '9999999',
-			display: 'flex', justifyContent: 'center', alignItems: 'center'
-		})
-		
-		const modal = document.createElement('div')
-		Object.assign(modal.style, {
-			background: '#fff', padding: '24px', borderRadius: '12px',
-			width: '90%', maxWidth: '800px', display: 'flex', flexDirection: 'column', gap: '12px'
-		})
-
-		const title = document.createElement('h2')
-		title.textContent = 'Modo de Debug - Elementos na Tela'
-		title.style.margin = '0'
-
-		const textarea = document.createElement('textarea')
-		textarea.value = textToCopy
-		Object.assign(textarea.style, {
-			width: '100%', height: '400px', fontFamily: 'monospace',
-			fontSize: '12px', padding: '8px', border: '1px solid #ccc', borderRadius: '8px'
-		})
-
-		const btnRow = document.createElement('div')
-		btnRow.style.display = 'flex'
-		btnRow.style.gap = '12px'
-		btnRow.style.justifyContent = 'flex-end'
-
-		const copyBtn = document.createElement('button')
-		copyBtn.textContent = 'Copiar Resultados'
-		Object.assign(copyBtn.style, {
-			padding: '10px 16px', background: '#3B82F6', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer'
-		})
-		copyBtn.onclick = () => {
-			navigator.clipboard.writeText(textToCopy).then(() => {
-				copyBtn.textContent = 'Copiado!'
-				setTimeout(() => copyBtn.textContent = 'Copiar Resultados', 2000)
-			})
-		}
-
-		const closeBtn = document.createElement('button')
-		closeBtn.textContent = 'Fechar'
-		Object.assign(closeBtn.style, {
-			padding: '10px 16px', background: '#EF4444', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer'
-		})
-		closeBtn.onclick = () => overlay.remove()
-
-		btnRow.appendChild(copyBtn)
-		btnRow.appendChild(closeBtn)
-		
-		modal.appendChild(title)
-		modal.appendChild(textarea)
-		modal.appendChild(btnRow)
-		overlay.appendChild(modal)
-		document.body.appendChild(overlay)
-	}
-
-	// =========================================================================
 	// ATALHOS
 	// =========================================================================
 	document.addEventListener('keydown', e => {
@@ -867,10 +774,6 @@
 		if (e.key.toLowerCase() === 'i') {
 			e.preventDefault()
 			openPrinterSelector()
-		}
-		if (e.key.toLowerCase() === 'd') {
-			e.preventDefault()
-			showDebugModal()
 		}
 	})
 })()
