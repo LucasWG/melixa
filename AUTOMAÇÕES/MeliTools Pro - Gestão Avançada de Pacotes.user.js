@@ -14,7 +14,7 @@
 // @run-at       document-idle
 // ==/UserScript==
 
-; (function () {
+;(function () {
 	'use strict'
 
 	// ==========================================
@@ -175,7 +175,7 @@
 						overlay.classList.add('melitools-confirm--visible')
 					})
 
-					const close = (result) => {
+					const close = result => {
 						overlay.classList.remove('melitools-confirm--visible')
 						overlay.classList.add('melitools-confirm--closing')
 						setTimeout(() => {
@@ -184,14 +184,18 @@
 						}, 200)
 					}
 
-					overlay.querySelector('.melitools-confirm__backdrop')?.addEventListener('click', () => close(false))
+					overlay
+						.querySelector('.melitools-confirm__backdrop')
+						?.addEventListener('click', () => close(false))
 
 					const cancelBtn = overlay.querySelector('.melitools-confirm__btn--cancel')
 					if (cancelBtn) cancelBtn.addEventListener('click', () => close(false))
 
-					overlay.querySelector('.melitools-confirm__btn--confirm')?.addEventListener('click', () => close(true))
+					overlay
+						.querySelector('.melitools-confirm__btn--confirm')
+						?.addEventListener('click', () => close(true))
 
-					const keyHandler = (e) => {
+					const keyHandler = e => {
 						if (e.key === 'Escape') {
 							e.preventDefault()
 							e.stopPropagation()
@@ -316,7 +320,9 @@
 				const btn = document.getElementById('melitools-toolbar-toggle')
 
 				// Ocultar tudo se houver um scan a decorrer
-				this.state.isScanning = !!sessionStorage.getItem(MeliTools.packageStatusChanger.config.STORAGE_KEY)
+				this.state.isScanning = !!sessionStorage.getItem(
+					MeliTools.packageStatusChanger.config.STORAGE_KEY
+				)
 
 				if (this.state.isScanning) {
 					if (toolbar) toolbar.style.display = 'none'
@@ -387,11 +393,22 @@
 					})
 				})
 
-				const allSpans = document.querySelectorAll('span, p, td, .andes-form-control__field')
+				const allSpans = document.querySelectorAll(
+					'span, p, td, .andes-form-control__field'
+				)
 				allSpans.forEach(el => {
-					if (el.closest('.melitools-copy-btn, .melitools-toolbar, #melitools-toast-container, .melitools-psc-modal, #melitools-qn-display, #melitools-psc-progress, .melitools-confirm')) return
+					if (
+						el.closest(
+							'.melitools-copy-btn, .melitools-toolbar, #melitools-toast-container, .melitools-psc-modal, #melitools-qn-display, #melitools-psc-progress, .melitools-confirm'
+						)
+					)
+						return
 					const text = el.textContent.trim()
-					if (/^\d{11}$/.test(text) && !el.querySelector('.melitools-copy-btn') && !el.parentElement?.querySelector('.melitools-copy-btn')) {
+					if (
+						/^\d{11}$/.test(text) &&
+						!el.querySelector('.melitools-copy-btn') &&
+						!el.parentElement?.querySelector('.melitools-copy-btn')
+					) {
 						this.appendCopyButton(el, text)
 					}
 				})
@@ -456,17 +473,25 @@
 					MeliTools.utils.copyToClipboard(id, 'ID do envio')
 				})
 
-				toolbar.querySelector('.melitools-toolbar__btn--copy').addEventListener('click', () => {
-					MeliTools.utils.copyToClipboard(id, 'ID do envio')
-				})
+				toolbar
+					.querySelector('.melitools-toolbar__btn--copy')
+					.addEventListener('click', () => {
+						MeliTools.utils.copyToClipboard(id, 'ID do envio')
+					})
 
 				toolbar.querySelectorAll('[data-action]').forEach(btn => {
 					btn.addEventListener('click', () => {
 						const action = btn.dataset.action
 						if (action === 'backoffice') {
-							window.open(`https://shipping-bo.adminml.com/sauron/shipments/shipment/${id}`, '_blank')
+							window.open(
+								`https://shipping-bo.adminml.com/sauron/shipments/shipment/${id}`,
+								'_blank'
+							)
 						} else if (action === 'audit') {
-							window.open(`https://envios.adminml.com/logistics/audit-trail/search?shipment_id=${id}`, '_blank')
+							window.open(
+								`https://envios.adminml.com/logistics/audit-trail/search?shipment_id=${id}`,
+								'_blank'
+							)
 						} else if (action === 'copyurl') {
 							MeliTools.utils.copyToClipboard(window.location.href, 'URL da página')
 						} else if (action === 'openpsc') {
@@ -583,7 +608,9 @@
 				if (this.isInputFocused()) return
 				if (this.isModalOpen()) return
 
-				const pastedText = (event.clipboardData || window.clipboardData)?.getData('text')?.trim()
+				const pastedText = (event.clipboardData || window.clipboardData)
+					?.getData('text')
+					?.trim()
 				if (!pastedText) return
 
 				const ids = MeliTools.utils.extractIds(pastedText)
@@ -770,9 +797,7 @@
 									<label>Status Destino</label>
 									<select id="psc-status-select">
 										<option value="" disabled selected>Selecione o status...</option>
-										${this.STATUS_OPTIONS.map(
-					s => `<option value="${s}">${s}</option>`
-				).join('')}
+										${this.STATUS_OPTIONS.map(s => `<option value="${s}">${s}</option>`).join('')}
 									</select>
 								</div>
 								<button class="melitools-psc-modal__submit" id="psc-submit-change">
@@ -856,8 +881,12 @@
 
 			bindModalEvents: function (modal) {
 				// Fechar
-				modal.querySelector('.melitools-psc-modal__backdrop').addEventListener('click', () => this.closeModal())
-				modal.querySelector('.melitools-psc-modal__close').addEventListener('click', () => this.closeModal())
+				modal
+					.querySelector('.melitools-psc-modal__backdrop')
+					.addEventListener('click', () => this.closeModal())
+				modal
+					.querySelector('.melitools-psc-modal__close')
+					.addEventListener('click', () => this.closeModal())
 
 				// ESC para fechar
 				const escHandler = e => {
@@ -871,16 +900,15 @@
 				// Tabs
 				modal.querySelectorAll('.melitools-psc-modal__tab').forEach(tab => {
 					tab.addEventListener('click', () => {
-						modal.querySelectorAll('.melitools-psc-modal__tab').forEach(t =>
-							t.classList.remove('melitools-psc-modal__tab--active')
-						)
-						modal.querySelectorAll('.melitools-psc-modal__tab-content').forEach(c =>
-							c.style.display = 'none'
-						)
+						modal
+							.querySelectorAll('.melitools-psc-modal__tab')
+							.forEach(t => t.classList.remove('melitools-psc-modal__tab--active'))
+						modal
+							.querySelectorAll('.melitools-psc-modal__tab-content')
+							.forEach(c => (c.style.display = 'none'))
 						tab.classList.add('melitools-psc-modal__tab--active')
-						modal.querySelector(
-							`[data-content="${tab.dataset.tab}"]`
-						).style.display = 'block'
+						modal.querySelector(`[data-content="${tab.dataset.tab}"]`).style.display =
+							'block'
 					})
 				})
 
@@ -913,7 +941,10 @@
 									textarea.dispatchEvent(new Event('input'))
 								}
 							} catch {
-								MeliTools.toast.show('Não foi possível acessar a área de transferência', 'warning')
+								MeliTools.toast.show(
+									'Não foi possível acessar a área de transferência',
+									'warning'
+								)
 							}
 						})
 					}
@@ -965,7 +996,10 @@
 				const ids = this.parseIds(idsText)
 
 				if (ids.length === 0) {
-					MeliTools.toast.show('Nenhum ID válido encontrado (esperado: 11 dígitos)', 'error')
+					MeliTools.toast.show(
+						'Nenhum ID válido encontrado (esperado: 11 dígitos)',
+						'error'
+					)
 					return
 				}
 
@@ -975,7 +1009,9 @@
 				}
 
 				const action = isVerificationOnly ? 'verificar' : 'alterar'
-				const statusInfo = isVerificationOnly ? '' : `<div class="melitools-confirm__status-tag">→ ${targetStatus}</div>`
+				const statusInfo = isVerificationOnly
+					? ''
+					: `<div class="melitools-confirm__status-tag">→ ${targetStatus}</div>`
 
 				const maxPreview = 8
 				const previewIds = ids.slice(0, maxPreview)
@@ -1058,7 +1094,9 @@
 								isVerificationOnly: executionData.isVerificationOnly
 							})
 						)
-						try { this.hideProgressDisplay() } catch (e) { }
+						try {
+							this.hideProgressDisplay()
+						} catch (e) {}
 						window.location.reload()
 						return
 					}
@@ -1076,14 +1114,21 @@
 				const currentUrlId = (currentUrl.match(/(\d{11})$/) || [])[1]
 
 				// Verifica se a página atual é efetivamente do sistema de gestão do primeiro ID
-				const isOnCorrectPage = currentUrl.startsWith(this.config.REDIRECT_URL_BASE) && currentUrlId === ids[currentIndex]
+				const isOnCorrectPage =
+					currentUrl.startsWith(this.config.REDIRECT_URL_BASE) &&
+					currentUrlId === ids[currentIndex]
 
 				if (ids && ids.length > 0) {
 					const remaining = Math.max(0, ids.length - currentIndex)
 					this.showProgressDisplay(remaining, ids.length, currentIndex)
 				}
 
-				if (!isVerificationOnly && reconfirmingId && isOnCorrectPage && currentUrlId === reconfirmingId) {
+				if (
+					!isVerificationOnly &&
+					reconfirmingId &&
+					isOnCorrectPage &&
+					currentUrlId === reconfirmingId
+				) {
 					this.verifyStatusAndContinue(data)
 					return
 				}
@@ -1109,7 +1154,9 @@
 							isVerificationOnly: data.isVerificationOnly
 						})
 					)
-					try { this.hideProgressDisplay() } catch (e) { }
+					try {
+						this.hideProgressDisplay()
+					} catch (e) {}
 					window.location.reload()
 				}
 			},
@@ -1165,8 +1212,13 @@
 						throw new Error('Não foi possível obter o status por nenhum método')
 					}
 				} catch (error) {
-					MeliTools.utils.log(`Erro ao verificar status de ${currentId}: ${error.message}`)
-					logEntry = { message: `${currentId}: Não foi possível verificar o status.`, type: 'error' }
+					MeliTools.utils.log(
+						`Erro ao verificar status de ${currentId}: ${error.message}`
+					)
+					logEntry = {
+						message: `${currentId}: Não foi possível verificar o status.`,
+						type: 'error'
+					}
 				} finally {
 					this.updateExecutionData(executionData, logEntry, true, finalStatus)
 					await MeliTools.utils.sleep(500)
@@ -1222,15 +1274,15 @@
 					await MeliTools.utils.sleep(1500)
 
 					executionData.reconfirmingId = currentId
-					sessionStorage.setItem(
-						this.config.STORAGE_KEY,
-						JSON.stringify(executionData)
-					)
+					sessionStorage.setItem(this.config.STORAGE_KEY, JSON.stringify(executionData))
 
 					window.location.reload()
 				} catch (error) {
 					MeliTools.utils.log(`Erro ao alterar status de ${currentId}: ${error.message}`)
-					const logEntry = { message: `${currentId}: Erro - ${error.message}`, type: 'error' }
+					const logEntry = {
+						message: `${currentId}: Erro - ${error.message}`,
+						type: 'error'
+					}
 					this.updateExecutionData(executionData, logEntry, true, finalStatus)
 					await MeliTools.utils.sleep(500)
 					this.processNextInQueue()
@@ -1260,8 +1312,13 @@
 					await MeliTools.utils.sleep(500)
 					this.processNextInQueue()
 				} catch (error) {
-					MeliTools.utils.log(`Erro ao verificar reconfirmação de ${currentId}: ${error.message}`)
-					const logEntry = { message: `${currentId}: Erro na verificação pós-alteração`, type: 'error' }
+					MeliTools.utils.log(
+						`Erro ao verificar reconfirmação de ${currentId}: ${error.message}`
+					)
+					const logEntry = {
+						message: `${currentId}: Erro na verificação pós-alteração`,
+						type: 'error'
+					}
 					executionData.reconfirmingId = null
 					this.updateExecutionData(executionData, logEntry, true, finalStatus)
 					await MeliTools.utils.sleep(500)
@@ -1287,7 +1344,7 @@
 					document.body.appendChild(display)
 				}
 
-				const processed = total ? (currentIndex || 0) : 0
+				const processed = total ? currentIndex || 0 : 0
 				const percent = total ? Math.round((processed / total) * 100) : 0
 
 				display.innerHTML = `
@@ -1303,33 +1360,36 @@
 				`
 				display.style.display = 'flex'
 
-				display.querySelector('.melitools-progress__cancel')?.addEventListener('click', async () => {
-					const confirmed = await MeliTools.confirmModal.show({
-						title: '⏹️ Cancelar Execução',
-						message: '<p>Deseja cancelar a execução em andamento?</p><p style="color:#999;font-size:12px;">Os pacotes já processados serão mantidos no relatório.</p>',
-						confirmText: 'Sim, cancelar',
-						cancelText: 'Não, continuar',
-						type: 'danger'
-					})
+				display
+					.querySelector('.melitools-progress__cancel')
+					?.addEventListener('click', async () => {
+						const confirmed = await MeliTools.confirmModal.show({
+							title: '⏹️ Cancelar Execução',
+							message:
+								'<p>Deseja cancelar a execução em andamento?</p><p style="color:#999;font-size:12px;">Os pacotes já processados serão mantidos no relatório.</p>',
+							confirmText: 'Sim, cancelar',
+							cancelText: 'Não, continuar',
+							type: 'danger'
+						})
 
-					if (confirmed) {
-						const data = sessionStorage.getItem(this.config.STORAGE_KEY)
-						if (data) {
-							const executionData = JSON.parse(data)
-							sessionStorage.removeItem(this.config.STORAGE_KEY)
-							sessionStorage.setItem(
-								this.config.FINAL_LOG_KEY,
-								JSON.stringify({
-									logs: executionData.logs,
-									isVerificationOnly: executionData.isVerificationOnly
-								})
-							)
-						} else {
-							sessionStorage.removeItem(this.config.STORAGE_KEY)
+						if (confirmed) {
+							const data = sessionStorage.getItem(this.config.STORAGE_KEY)
+							if (data) {
+								const executionData = JSON.parse(data)
+								sessionStorage.removeItem(this.config.STORAGE_KEY)
+								sessionStorage.setItem(
+									this.config.FINAL_LOG_KEY,
+									JSON.stringify({
+										logs: executionData.logs,
+										isVerificationOnly: executionData.isVerificationOnly
+									})
+								)
+							} else {
+								sessionStorage.removeItem(this.config.STORAGE_KEY)
+							}
+							window.location.reload()
 						}
-						window.location.reload()
-					}
-				})
+					})
 			},
 
 			hideProgressDisplay: function () {
@@ -1341,7 +1401,9 @@
 				const overlay = document.createElement('div')
 				overlay.className = 'melitools-psc-modal melitools-psc-modal--visible'
 
-				const title = isVerificationOnly ? '🔍 Relatório de Verificação' : '📊 Relatório de Alteração'
+				const title = isVerificationOnly
+					? '🔍 Relatório de Verificação'
+					: '📊 Relatório de Alteração'
 
 				const statusGroups = {}
 				logs.forEach(log => {
@@ -1387,20 +1449,22 @@
 							</div>
 							<div class="melitools-report__group-ids">
 								${items
-								.map(item => {
-									const typeClass = `melitools-report__item--${item.type}`
-									return `<span class="melitools-report__item ${typeClass}" title="${item.message}">${item.message.substring(0, 40)}</span>`
-								})
-								.join('')}
+									.map(item => {
+										const typeClass = `melitools-report__item--${item.type}`
+										return `<span class="melitools-report__item ${typeClass}" title="${item.message}">${item.message.substring(0, 40)}</span>`
+									})
+									.join('')}
 							</div>
 						</div>
 					`
 					})
 
-				const allIds = logs.map(l => {
-					const m = l.message.match(/\d{11}/)
-					return m ? m[0] : ''
-				}).filter(Boolean)
+				const allIds = logs
+					.map(l => {
+						const m = l.message.match(/\d{11}/)
+						return m ? m[0] : ''
+					})
+					.filter(Boolean)
 
 				overlay.innerHTML = `
 					<div class="melitools-psc-modal__backdrop"></div>
@@ -1425,8 +1489,12 @@
 
 				document.body.appendChild(overlay)
 
-				overlay.querySelector('.melitools-psc-modal__backdrop').addEventListener('click', () => overlay.remove())
-				overlay.querySelector('.melitools-psc-modal__close').addEventListener('click', () => overlay.remove())
+				overlay
+					.querySelector('.melitools-psc-modal__backdrop')
+					.addEventListener('click', () => overlay.remove())
+				overlay
+					.querySelector('.melitools-psc-modal__close')
+					.addEventListener('click', () => overlay.remove())
 
 				const escHandler = e => {
 					if (e.key === 'Escape' && !document.querySelector('.melitools-confirm')) {
@@ -2423,7 +2491,7 @@
 		MeliTools.quickNavigator.init()
 		MeliTools.packageStatusChanger.init()
 		MeliTools.smartIdDetector.init()
-		MeliTools.toolbarController.init()
+		// MeliTools.toolbarController.init()
 		MeliTools.utils.log('MeliTools Pro inicializado com sucesso!')
 	}
 
