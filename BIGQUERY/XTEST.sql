@@ -1,0 +1,20 @@
+SELECT
+	(
+		SELECT
+			MAX(SHP_ITEM_DESC)
+		FROM
+			UNNEST (shp.ITEMS)
+	) AS descricao,
+	tms.SHP_LABEL_ZONE_NAME AS svc,
+	lg.SHP_LG_STATUS AS status,
+	lg.SHP_LG_LAST_UPDATED AS atualizacaoRaw,
+	tms.TMS_TR_PACKINGLIST_NUMBER AS hu,
+	tms.TMS_TR_LOGISTIC_CENTER_ID AS ultimoStep,
+	lg.SHP_LG_FACILITY_ORIGIN_ID AS origem,
+	tms.TMS_TR_DIS_TRUCK_ID AS placa
+FROM
+	`meli-bi-data.WHOWNER.BT_SHP_SHIPMENTS` shp
+	LEFT JOIN `meli-bi-data.WHOWNER.BT_TMS_TRACKING` tms ON shp.SHP_SHIPMENT_ID = tms.SHP_SHIPMENT_ID
+	LEFT JOIN `meli-bi-data.WHOWNER.BT_SHP_LG_SHIPMENTS` lg ON shp.SHP_SHIPMENT_ID = lg.SHP_SHIPMENT_ID
+WHERE
+	shp.SHP_SHIPMENT_ID IN () -- Insira os IDs desejados aqui

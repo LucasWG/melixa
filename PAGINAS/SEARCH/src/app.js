@@ -1696,3 +1696,119 @@ $("#themeBtn").addEventListener("click", () => {
 	}
 	dbg("PackSearch iniciado com sucesso", "ok");
 })();
+
+/* ─── 22. Settings Modal (Enriquecimento) ───────────────────────── */
+const ENRICH_QUERY_TEMPLATE = `SELECT
+	shp.SHP_SHIPMENT_ID AS id,
+	(
+		SELECT MAX(SHP_ITEM_DESC) FROM UNNEST (shp.ITEMS)
+	) AS descricao,
+	tms.SHP_LABEL_ZONE_NAME AS svc,
+	lg.SHP_LG_STATUS AS status,
+	lg.SHP_LG_LAST_UPDATED AS atualizacaoRaw,
+	tms.TMS_TR_PACKINGLIST_NUMBER AS hu,
+	tms.TMS_TR_LOGISTIC_CENTER_ID AS ultimoStep,
+	lg.SHP_LG_FACILITY_ORIGIN_ID AS origem,
+	tms.TMS_TR_DIS_TRUCK_ID AS placa
+FROM
+	\`meli-bi-data.WHOWNER.BT_SHP_SHIPMENTS\` shp
+	LEFT JOIN \`meli-bi-data.WHOWNER.BT_TMS_TRACKING\` tms ON shp.SHP_SHIPMENT_ID = tms.SHP_SHIPMENT_ID
+	LEFT JOIN \`meli-bi-data.WHOWNER.BT_SHP_LG_SHIPMENTS\` lg ON shp.SHP_SHIPMENT_ID = lg.SHP_SHIPMENT_ID
+WHERE
+	shp.SHP_SHIPMENT_ID IN ({{IDS}})`;
+
+function openSettingsModal() {
+	const missingIds = [];
+	for (const [id, items] of itemsMap.entries()) {
+		if (items.some(it => !it.descricao || it.descricao.trim() === '')) {
+			missingIds.push(id);
+		}
+	}
+	
+	$("#missingDescCount").textContent = missingIds.length;
+	$("#enrichmentData").value = "";
+	
+	const btn = $("#copyQueryBtn");
+	if (missingIds.length === 0) {
+		btn.disabled = true;
+		btn.style.opacity = "0.5";
+		btn.style.cursor = "not-allowed";
+	} else {
+		btn.disabled = false;
+		btn.style.opacity = "1";
+		btn.style.cursor = "pointer";
+	}
+	
+	$("#settingsModal").style.display = "flex";
+}
+
+function closeSettingsModal() {
+	$("#settingsModal").style.display = "none";
+}
+
+const settingsBtn = $("#settingsBtn");
+if (settingsBtn) settingsBtn.addEventListener("click", openSettingsModal);
+
+const closeSettingsBtn = $("#closeSettingsBtn");
+if (closeSettingsBtn) closeSettingsBtn.addEventListener("click", closeSettingsModal);
+
+const settingsModal = $("#settingsModal");
+if (settingsModal) {
+	settingsModal.addEventListener("click", (e) => {
+		if (e.target === settingsModal) closeSettingsModal();
+	});
+}
+
+const copyQueryBtn = $("#copyQueryBtn");
+if (copyQueryBtn) {
+	copyQueryBtn.addEventListener("click", () => {
+		const missingIds = [];
+		for (const [id, items] of itemsMap.entries()) {
+			if (items.some(it => !it.descricao || it.descricao.trim() === '')) {
+				missingIds.push(id);
+			}
+		}
+		if (!missingIds.length) return;
+		
+		const idsString = missingIds.join(', ');
+		const finalQuery = ENRICH_QUERY_TEMPLATE.replace("{{IDS}}", idsString);
+		
+		navigator.clipboard.writeText(finalQuery).then(() => {
+			toast("Query SQL copiada para a área de transferência!", "success");
+		}).catch(() => {
+			toast("Erro ao copiar a query SQL.", "error");
+		});
+	});
+}
+
+const applyEnrichmentBtn = $("#applyEnrichmentBtn");
+if (applyEnrichmentBtn) {
+	applyEnrichmentBtn.addEventListener("click", async () => {
+		const text = $("#enrichmentData").value.trim();
+		if (!text) {
+			toast("Cole os dados para enriquecer.", "warn");
+			return;
+		}
+		
+		setProgress(10);
+		const parsed = parseFileContent(text, "Enriquecimento");
+		if (!parsed.length) {
+			toast("Nenhum item válido encontrado no texto.", "error");
+			setProgress(100);
+			return;
+		}
+		
+		setProgress(50);
+		const { added, merged } = ingestItems(parsed);
+		
+		dataSource = "memory";
+		await saveItems();
+		rebuildChecklists();
+		state.page = 1;
+		render();
+		setProgress(100);
+		
+		closeSettingsModal();
+		toast(`Enriquecimento concluído: ${merged} atualizados.`, "success", 4000);
+	});
+}
