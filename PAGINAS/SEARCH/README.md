@@ -1,148 +1,145 @@
-# 📦 PackSearch
+# 📦 PackSearch v3
 
-![Version](https://img.shields.io/badge/version-3.0.0-blue.svg)
-![License](https://img.shields.io/badge/license-MIT-green.svg)
-![JavaScript](https://img.shields.io/badge/javascript-ES6%2B-yellow.svg)
+![Version](https://img.shields.io/badge/version-3.0.0-blue.svg?style=for-the-badge)
+![License](https://img.shields.io/badge/license-MIT-green.svg?style=for-the-badge)
+![JavaScript](https://img.shields.io/badge/javascript-ES6%2B-yellow.svg?style=for-the-badge)
+![Interface](https://img.shields.io/badge/UI-Modern%20Design-orange.svg?style=for-the-badge)
 
-> **Uma aplicação web moderna, rápida e sem servidor para busca inteligente e gerenciamento logístico de pacotes e remessas.**
+> **Uma plataforma logística serverless de alto desempenho para busca, rastreamento e enriquecimento inteligente de dados de remessas.**
 
-O **PackSearch** permite que você processe, gerencie e faça buscas avançadas em grandes volumes de dados de envios diretamente pelo navegador. Construído com tecnologias web modernas, ele suporta a importação flexível através de múltiplos formatos (CSV tabular e blocos chave-valor), contando com um mecanismo de busca poderoso e armazenamento persistente com `IndexedDB`.
-
----
-
-## ✨ Principais Funcionalidades
-
-* **🔍 Busca Transacional Avançada:** Mecanismo rigoroso de filtragem de dados.
-  * *Exata:* Busque por frases exatas usando `"entre aspas"`.
-  * *Exclusão:* Remova termos indesejados da busca prefixando com `-termo`.
-  * *Campos Específicos:* Utilize prefixos de escopo como `id:`, `svc:` e `tramo:`.
-* **📊 Tratamento Inteligente de Dados:** Parser duplo adaptável.
-  * Suporta arquivos `.csv` e `.txt`.
-  * Reconhecimento automático de delimitadores (`,`, `;`, `|`, `\t`).
-  * Normalização em tempo real de textos (remoção de acentos) e tipificação de datas em português (ex: "10 de janeiro").
-  * Mapeamento de colunas automático com sistema de *aliases*.
-* **💾 Persistência Offline (*Serverless*):** 
-  * Dados são salvos de forma segura no seu próprio navegador utilizando **IndexedDB**.
-  * Acesso e filtragem com latência quase nula.
-  * Não há necessidade de infraestrutura ou banco de dados externo.
-* **🎨 UI/UX Moderna:** 
-  * Design responsivo, concebido com CSS Grid e Flexbox.
-  * Modos *Light*, *Dark* ou *System-default* adaptativos.
-  * Notificações *Toast* e *Progress Bars* não-bloqueantes.
+O **PackSearch** é uma solução web moderna projetada para profissionais de logística que lidam com grandes volumes de dados. Ele permite processar, gerenciar e realizar buscas complexas em remessas diretamente no navegador, eliminando a necessidade de infraestrutura de servidor e garantindo a máxima privacidade e agilidade.
 
 ---
 
-## 🚀 Início Rápido
+## 🚀 Diferenciais Estratégicos
 
-O PackSearch é uma aplicação estática (cliente). O setup é imediato e não impõe dependências complexas.
+- **🔍 Engine de Busca Transacional**: Localize qualquer informação instantaneamente com suporte a termos exatos (`"frase"`), exclusão (`-termo`) e escopo por campos (`id:`, `svc:`, `tramo:`).
+- **📂 Parser Inteligente e Adaptável**: Suporte nativo para múltiplos formatos:
+    - **CSV Tabular**: Detecção automática de delimitadores (`,`, `;`, `|`, `\t`).
+    - **Blocos Chave-Valor**: Processamento de logs e textos estruturados.
+    - **Mapeamento Dinâmico**: Sistema de _aliases_ que reconhece colunas como `shipment`, `descri`, `facility_id` e as converte automaticamente.
+- **💾 Persistência Offline Industrial**: Utiliza **IndexedDB** para armazenar milhares de registros de forma segura no navegador, permitindo acesso instantâneo e recuperação pós-fechamento.
+- **🧬 Fluxo de Enriquecimento (SQL Sync)**: Gere automaticamente queries SQL para BigQuery para buscar dados faltantes e atualize seu cache local colando os resultados.
+- **🎨 Experiência Premium (UI/UX)**: Interface responsiva com suporte a temas (Light/Dark), animações sutis, visualização em Grade/Lista e notificações não-bloqueantes.
 
-### Pré-requisitos
-* Um navegador web moderno (Google Chrome 90+, Firefox 88+, Safari 14+, Edge 90+).
+---
 
-### Instalação e Execução
+## 🛠 Tech Stack
 
-1. **Clone o repositório:**
-   ```bash
-   git clone https://seu-repositorio/PackageSearch.git
-   cd PackageSearch
-   ```
+A arquitetura do PackSearch prioriza performance e zero dependências externas pesadas (Zero-Dependency Core):
 
-2. **Sirva a aplicação:**
-   *Recomendamos a utilização de um servidor HTTP local simples para contornar políticas de restrição de CORDs em importações caso necessário, ou abrir o arquivo diretamente.*
-   ```bash
-   # Utilizando Python 3:
-   python3 -m http.server 8000
-   
-   # Em seguida, acesse no navegador:
-   # http://localhost:8000/src/
-   ```
+- **Core**: Vanilla JavaScript (ES6+) para máxima eficiência.
+- **Storage**: IndexedDB API para persistência de dados em larga escala.
+- **Styling**: Modern CSS (Grid, Flexbox, CSS Variables) com design responsivo.
+- **Icons**: SVG nativo para carregamento ultra-rápido.
+- **Fonts**: Inter (via Google Fonts) para legibilidade profissional.
 
 ---
 
 ## 📖 Guia de Uso
 
 ### 1. Importação de Dados
-Na tela inicial, utilize o botão superior de **Importar** para carregar seu arquivo.
 
-* **CSV Suportado (Exemplo de Estrutura)**
-  ```csv
-  shipment,descri,shp_lg_facility_id,status,atualizao,valor_usd,origem
-  SMG001,Pacote A,SMG2,Em Trânsito,10 de janeiro de 2026,150.00,São Paulo
-  ```
-*O sistema mapeará automaticamente `shipment` para `id`, `descri` para `descricao`, etc.*
+Simplesmente arraste seu arquivo `.csv` ou `.txt` ou use o botão **Importar**. O sistema cuidará da normalização:
 
-### 2. Sintaxe de Busca
-A barra de pesquisa provê um modo intuitivo para localizar instâncias de pacotes e realizar diagnósticos cruzados:
+- Remoção automática de acentos e caracteres especiais.
+- Conversão de datas em português (ex: "10 de janeiro de 2026").
+- Identificação de valores monetários e status logísticos.
 
-| Caso de Uso | Exemplo de Sintaxe | O que faz? |
-| :--- | :--- | :--- |
-| **Geral** | `pacote` | Retorna qualquer card contendo "pacote". |
-| **Composição** | `"são paulo" svc:SMG2` | Requer que o destino exato seja "são paulo" E possua facilidade SMG2. |
-| **Exclusão** | `id:12 -cancelado` | Pacotes do ID que contém 12 onde o trecho de texto "cancelado" não está. |
-| **Trajeto** | `tramo:ONWAY` | Filtro específico na coluna/dados lidos de *tramo*. |
+### 2. Sintaxe de Busca Avançada
+
+A barra de pesquisa não é apenas um filtro de texto, é uma ferramenta de diagnóstico:
+
+| Operação            | Exemplo de Sintaxe      | Descrição                                                   |
+| :------------------ | :---------------------- | :---------------------------------------------------------- |
+| **Termo Exato**     | `"São Paulo"`           | Busca a frase exatamente como escrita.                      |
+| **Exclusão**        | `id:123 -cancelado`     | Busca o ID 123, mas oculta itens que contenham "cancelado". |
+| **Escopo de Campo** | `svc:SMG2`              | Filtra especificamente na coluna de serviço (SVC).          |
+| **Composição**      | `tramo:ONWAY "urgente"` | Combina filtros de campo com termos de texto.               |
 
 ---
 
-## 🛠 Arquitetura do Projeto
+## 💻 Desenvolvimento e Estrutura
 
-A base de código mantém as coisas intencionalmente simples, legíveis e separadas por contexto, favorecendo o *Vanilla JS*.
+O projeto segue uma estrutura modular e limpa para facilitar extensões:
 
 ```text
 PackageSearch/
-├── README.md             # Este arquivo de documentação
-└── src/
-    ├── index.html        # Estrutura principal e marcação (DOM)
-    ├── app.js            # Engine de importação, parser, cache e busca
-    └── styles.css        # Sistema de design, estilos globais e tema
+├── src/
+│   ├── index.html     # Estrutura semântica e acessível
+│   ├── app.js         # Engine principal (Parser, Search, IDB)
+│   ├── styles.css     # Design System e Tematização
+│   └── image/         # Assets e recursos visuais
+├── .editorconfig      # Padronização de código
+└── README.md          # Documentação técnica
 ```
 
----
+### Extensibilidade
 
-## 💻 Desenvolvimento & Extensão
+Para adicionar novos apelidos de colunas, basta editar a constante `COL_MAP` em `src/app.js`:
 
-A arquitetura baseada em Javascript vanilla permite adições fáceis com mínimo de atrito.
-
-**Adicionando novos apelidos ao importador:**
-No arquivo `src/app.js`, você pode incluir novos mapeamentos de propriedades na constante `COL_MAP`:
 ```javascript
 const COL_MAP = {
-  meu_novo_identificador: "chaveInternaRefinada",
-  status_pacote: "status"
-  // ... adicione mappings customizados aqui
-};
-```
-
-**Alterando o padrão de formatação de datas:**
-Se precisa oferecer suporte a novos termos logísticos de datas ou idiomas, atualize o objeto `MONTHS` em `src/app.js`:
-```javascript
-const MONTHS = {
-  jan: 0, fev: 1, mar: 2, /* ... */
-  ene: 0, feb: 1, mar: 2  // Exemplo de extensão para formato em espanhol
+	meu_campo_custom: "id", // Mapeia 'meu_campo_custom' para o ID interno
+	// ...
 };
 ```
 
 ---
 
-## 🤝 Contribuindo
+## 📦 Instalação e Execução Local
 
-Contribuições são sempre bem-vindas! Para mudanças maiores, por favor, abra uma *issue* primeiro para discutir o que você gostaria de alterar e alinhar junto à comunidade as visões do projeto.
+Como o PackSearch é uma aplicação estática, a execução é imediata.
 
-1. Faça o *Fork* do projeto
-2. Crie uma branch de funcionalidade (`git checkout -b feature/NovaFuncionalidade`)
-3. Realize seus *commits* descritivos (`git commit -m 'feat: adicionei novas métricas ao dashboard'`)
-4. Suba suas alterações para a sua branch originada do *fork* (`git push origin feature/NovaFuncionalidade`)
-5. Abra um *Pull Request* no repositório principal indicando a proposta de valor.
+1.  **Clone o repositório**:
+
+    ```bash
+    git clone https://github.com/seu-usuario/PackageSearch.git
+    cd PackageSearch
+    ```
+
+2.  **Servidor Local (Recomendado)**:
+    Para evitar restrições de CORS ao lidar com módulos ou arquivos locais:
+
+    ```bash
+    # Usando Python
+    python3 -m http.server 8000
+
+    # Ou usando Node.js (npx)
+    npx serve src/
+    ```
+
+3.  **Acesse**: `http://localhost:8000/src/`
+
+---
+
+## 🎯 Roadmap & Futuro
+
+- [ ] Exportação consolidada para Excel/JSON.
+- [ ] Dashboards analíticos com gráficos integrados.
+- [ ] Sincronização em nuvem opcional (E2E Encrypted).
+- [ ] Suporte a múltiplos idiomas (i18n).
+
+---
+
+## 🤝 Contribuição
+
+Interessado em melhorar o PackSearch?
+
+1. Faça um **Fork**.
+2. Crie sua Feature Branch (`git checkout -b feature/AmazingFeature`).
+3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`).
+4. Push para a Branch (`git push origin feature/AmazingFeature`).
+5. Abra um **Pull Request**.
 
 ---
 
 ## 📝 Licença
-Distribuído sob a licença **MIT**. Consulte o arquivo de licença para mais informações de uso e isenção de responsabilidade.
 
-## ✉️ Suporte e Contato
-Para relatar problemas (bugs) ou solicitar melhorias, por favor registre um registro pelo sistema de rastreamento do GitHub.
+Distribuído sob a licença **MIT**. Veja `LICENSE` para mais informações.
 
-### 🎯 Roadmap Futuro
-* Exportação consolidada de buscas em formatos Excel/JSON.
-* Funcionalidades de sincronização bidirecional via API Restful.
-* Módulos avançados de análise e criação de gráficos integrados.
-* Integração de testes automatizados e workflows de validação contínua.
+---
+
+<p align="center">
+  Desenvolvido com ❤️ por <strong>LucasWG</strong>
+</p>

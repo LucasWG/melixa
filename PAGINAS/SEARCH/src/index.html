@@ -10,7 +10,12 @@
 			href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
 			rel="stylesheet"
 		/>
-		<link rel="icon" type="image/png" sizes="32x32" href="favicon/caixa-de-papelao.png" />
+		<link
+			rel="icon"
+			type="image/png"
+			sizes="32x32"
+			href="image/caixa-de-papelao.png"
+		/>
 		<link rel="stylesheet" href="styles.css" />
 	</head>
 	<body>
@@ -19,7 +24,7 @@
 		<!-- HEADER -->
 		<header id="header" data-testid="header">
 			<div id="logo">
-				<img src="favicon/caixa-de-papelao.png" alt="" height="25" />
+				<img src="image/caixa-de-papelao.png" alt="" height="25" />
 				<a href="/">
 					<span class="logo-text">PackSearch</span>
 				</a>
@@ -46,8 +51,14 @@
 				/>
 			</div>
 			<div class="header-actions">
-				<div id="cacheBadge" data-testid="cache-badge">Cache: vazio</div>
-				<label id="uploadLabel" for="fileInput" data-testid="upload-label">
+				<div id="cacheBadge" data-testid="cache-badge">
+					Cache: vazio
+				</div>
+				<label
+					id="uploadLabel"
+					for="fileInput"
+					data-testid="upload-label"
+				>
 					<svg
 						width="15"
 						height="15"
@@ -63,7 +74,11 @@
 					Importar
 				</label>
 				<input type="file" id="fileInput" multiple accept=".csv,.txt" />
-				<button class="btn btn-danger" id="clearBtn" data-testid="clear-btn">
+				<button
+					class="btn btn-danger"
+					id="clearBtn"
+					data-testid="clear-btn"
+				>
 					<svg
 						width="14"
 						height="14"
@@ -73,7 +88,9 @@
 						stroke-width="2.5"
 					>
 						<polyline points="3 6 5 6 21 6" />
-						<path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+						<path
+							d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"
+						/>
 						<path d="M10 11v6M14 11v6" />
 						<path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
 					</svg>
@@ -94,13 +111,29 @@
 						stroke="currentColor"
 						stroke-width="2"
 					>
-						<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+						<path
+							d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"
+						/>
 					</svg>
 				</button>
-				<button class="btn-icon" id="settingsBtn" title="Configurações" data-testid="settings-btn">
-					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+				<button
+					class="btn-icon"
+					id="settingsBtn"
+					title="Configurações"
+					data-testid="settings-btn"
+				>
+					<svg
+						width="16"
+						height="16"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+					>
 						<circle cx="12" cy="12" r="3"></circle>
-						<path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+						<path
+							d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"
+						></path>
 					</svg>
 				</button>
 			</div>
@@ -133,7 +166,11 @@
 						/>
 					</div>
 				</div>
-				<div class="filter-section" id="chipsSection" style="display: none">
+				<div
+					class="filter-section"
+					id="chipsSection"
+					style="display: none"
+				>
 					<div class="filter-title">Filtros ativos</div>
 					<div id="activeChips"></div>
 				</div>
@@ -147,7 +184,9 @@
 							stroke="currentColor"
 							stroke-width="2.5"
 						>
-							<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+							<path
+								d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"
+							/>
 						</svg>
 						SVC
 					</div>
@@ -205,9 +244,19 @@
 					</div>
 					<div class="date-range">
 						<label
-							>De <input type="date" id="dateFrom" data-testid="date-from"
+							>De
+							<input
+								type="date"
+								id="dateFrom"
+								data-testid="date-from"
 						/></label>
-						<label>Até <input type="date" id="dateTo" data-testid="date-to" /></label>
+						<label
+							>Até
+							<input
+								type="date"
+								id="dateTo"
+								data-testid="date-to"
+						/></label>
 					</div>
 				</div>
 				<div class="filter-section">
@@ -221,7 +270,9 @@
 							stroke-width="2.5"
 						>
 							<line x1="12" y1="1" x2="12" y2="23" />
-							<path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+							<path
+								d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"
+							/>
 						</svg>
 						Valor USD
 					</div>
@@ -294,7 +345,9 @@
 			<!-- MAIN -->
 			<main id="main">
 				<div id="mainToolbar">
-					<div id="resultCount" data-testid="result-count">Nenhum item carregado</div>
+					<div id="resultCount" data-testid="result-count">
+						Nenhum item carregado
+					</div>
 					<span id="debugToggle" style="display: none">🐛 Debug</span>
 					<!-- VIEW TOGGLE -->
 					<div id="viewToggle" data-testid="view-toggle">
@@ -368,8 +421,18 @@
 		>
 			<div class="modal-box">
 				<div class="modal-icon">⚠️</div>
-				<h3 class="modal-title" id="modalTitle" data-testid="modal-title">Confirmar</h3>
-				<p class="modal-message" id="confirmMessage" data-testid="confirm-message"></p>
+				<h3
+					class="modal-title"
+					id="modalTitle"
+					data-testid="modal-title"
+				>
+					Confirmar
+				</h3>
+				<p
+					class="modal-message"
+					id="confirmMessage"
+					data-testid="confirm-message"
+				></p>
 				<div class="modal-actions">
 					<button
 						class="btn btn-ghost"
@@ -399,22 +462,62 @@
 			<div class="modal-box modal-box-lg">
 				<div class="modal-header">
 					<h3 class="modal-title">Configurações de Enriquecimento</h3>
-					<button class="btn-icon" id="closeSettingsBtn" title="Fechar">
-						<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+					<button
+						class="btn-icon"
+						id="closeSettingsBtn"
+						title="Fechar"
+					>
+						<svg
+							width="18"
+							height="18"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2.5"
+						>
 							<line x1="18" y1="6" x2="6" y2="18"></line>
 							<line x1="6" y1="6" x2="18" y2="18"></line>
 						</svg>
 					</button>
 				</div>
-				
+
 				<div class="settings-section">
 					<div class="settings-header">
-						<h4>1. IDs sem Descrição (<span id="missingDescCount">0</span>)</h4>
-						<p>Copie a query já formatada para extrair dados faltantes no BigQuery. Apenas os IDs sem descrição são incluídos.</p>
+						<h4>
+							1. IDs sem Descrição (<span id="missingDescCount"
+								>0</span
+							>)
+						</h4>
+						<p>
+							Copie a query já formatada para extrair dados
+							faltantes no BigQuery. Apenas os IDs sem descrição
+							são incluídos.
+						</p>
 					</div>
-					<button class="btn btn-primary" id="copyQueryBtn" style="width: 100%; justify-content: center;">
-						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-							<rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+					<button
+						class="btn btn-primary"
+						id="copyQueryBtn"
+						style="width: 100%; justify-content: center"
+					>
+						<svg
+							width="16"
+							height="16"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+						>
+							<rect
+								x="9"
+								y="9"
+								width="13"
+								height="13"
+								rx="2"
+								ry="2"
+							></rect>
+							<path
+								d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+							></path>
 						</svg>
 						Copiar SQL Query
 					</button>
@@ -423,11 +526,34 @@
 				<div class="settings-section">
 					<div class="settings-header">
 						<h4>2. Colar Resultado (Enriquecer)</h4>
-						<p>Cole o resultado da query gerada acima com o cabeçalho. As informações faltantes dos IDs serão atualizadas.</p>
+						<p>
+							Cole o resultado da query gerada acima com o
+							cabeçalho. As informações faltantes dos IDs serão
+							atualizadas.
+						</p>
 					</div>
-					<textarea id="enrichmentData" rows="6" placeholder="Cole os dados aqui (com cabeçalhos)"></textarea>
-					<button class="btn btn-success" id="applyEnrichmentBtn" style="width: 100%; justify-content: center; margin-top: 10px;">
-						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+					<textarea
+						id="enrichmentData"
+						rows="6"
+						placeholder="Cole os dados aqui (com cabeçalhos)"
+					></textarea>
+					<button
+						class="btn btn-success"
+						id="applyEnrichmentBtn"
+						style="
+							width: 100%;
+							justify-content: center;
+							margin-top: 10px;
+						"
+					>
+						<svg
+							width="16"
+							height="16"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2.5"
+						>
 							<polyline points="20 6 9 17 4 12"></polyline>
 						</svg>
 						Aplicar Enriquecimento

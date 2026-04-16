@@ -683,18 +683,20 @@ function ingestItems(newItems) {
 	for (const item of newItems) {
 		if (!item.id) continue;
 		if (!item._extra) item._extra = {};
-		
+
 		if (itemsMap.has(item.id)) {
 			const existingGroup = itemsMap.get(item.id);
 			for (const ex of existingGroup) {
 				mergeIntoExisting(ex, item);
 				mergeIntoExisting(item, ex);
 			}
-			
+
 			if (item._isEnrichment) {
 				merged++;
 			} else {
-				const ghostIdx = existingGroup.findIndex(x => x._isEnrichment);
+				const ghostIdx = existingGroup.findIndex(
+					(x) => x._isEnrichment,
+				);
 				if (ghostIdx !== -1) {
 					existingGroup[ghostIdx]._isEnrichment = false;
 					merged++;
@@ -726,10 +728,7 @@ async function saveItems() {
 		dbg(`Cache salvo (IndexedDB): ${allItems.length} itens`, "ok");
 	} catch (e) {
 		dbg(`Erro ao salvar cache: ${e.message}`, "err");
-		toast(
-			"Falha ao salvar dados no IndexedDB. Dados em memória.",
-			"warn",
-		);
+		toast("Falha ao salvar dados no IndexedDB. Dados em memória.", "warn");
 		dataSource = "memory";
 	}
 	updateCacheBadge();
@@ -751,7 +750,7 @@ async function loadItems() {
 				: parsePtDate(it.atualizacaoRaw);
 			if (!it._extra) it._extra = {};
 			it._searchBlob = buildBlob(it);
-			
+
 			if (!itemsMap.has(it.id)) {
 				itemsMap.set(it.id, []);
 			}
@@ -1720,14 +1719,14 @@ WHERE
 function openSettingsModal() {
 	const missingIds = [];
 	for (const [id, items] of itemsMap.entries()) {
-		if (items.some(it => !it.descricao || it.descricao.trim() === '')) {
+		if (items.some((it) => !it.descricao || it.descricao.trim() === "")) {
 			missingIds.push(id);
 		}
 	}
-	
+
 	$("#missingDescCount").textContent = missingIds.length;
 	$("#enrichmentData").value = "";
-	
+
 	const btn = $("#copyQueryBtn");
 	if (missingIds.length === 0) {
 		btn.disabled = true;
@@ -1738,7 +1737,7 @@ function openSettingsModal() {
 		btn.style.opacity = "1";
 		btn.style.cursor = "pointer";
 	}
-	
+
 	$("#settingsModal").style.display = "flex";
 }
 
@@ -1750,7 +1749,8 @@ const settingsBtn = $("#settingsBtn");
 if (settingsBtn) settingsBtn.addEventListener("click", openSettingsModal);
 
 const closeSettingsBtn = $("#closeSettingsBtn");
-if (closeSettingsBtn) closeSettingsBtn.addEventListener("click", closeSettingsModal);
+if (closeSettingsBtn)
+	closeSettingsBtn.addEventListener("click", closeSettingsModal);
 
 const settingsModal = $("#settingsModal");
 if (settingsModal) {
@@ -1764,20 +1764,28 @@ if (copyQueryBtn) {
 	copyQueryBtn.addEventListener("click", () => {
 		const missingIds = [];
 		for (const [id, items] of itemsMap.entries()) {
-			if (items.some(it => !it.descricao || it.descricao.trim() === '')) {
+			if (
+				items.some((it) => !it.descricao || it.descricao.trim() === "")
+			) {
 				missingIds.push(id);
 			}
 		}
 		if (!missingIds.length) return;
-		
-		const idsString = missingIds.join(', ');
+
+		const idsString = missingIds.join(", ");
 		const finalQuery = ENRICH_QUERY_TEMPLATE.replace("{{IDS}}", idsString);
-		
-		navigator.clipboard.writeText(finalQuery).then(() => {
-			toast("Query SQL copiada para a área de transferência!", "success");
-		}).catch(() => {
-			toast("Erro ao copiar a query SQL.", "error");
-		});
+
+		navigator.clipboard
+			.writeText(finalQuery)
+			.then(() => {
+				toast(
+					"Query SQL copiada para a área de transferência!",
+					"success",
+				);
+			})
+			.catch(() => {
+				toast("Erro ao copiar a query SQL.", "error");
+			});
 	});
 }
 
@@ -1789,7 +1797,7 @@ if (applyEnrichmentBtn) {
 			toast("Cole os dados para enriquecer.", "warn");
 			return;
 		}
-		
+
 		setProgress(10);
 		const parsed = parseFileContent(text, "Enriquecimento");
 		if (!parsed.length) {
@@ -1797,18 +1805,22 @@ if (applyEnrichmentBtn) {
 			setProgress(100);
 			return;
 		}
-		
+
 		setProgress(50);
 		const { added, merged } = ingestItems(parsed);
-		
+
 		dataSource = "memory";
 		await saveItems();
 		rebuildChecklists();
 		state.page = 1;
 		render();
 		setProgress(100);
-		
+
 		closeSettingsModal();
-		toast(`Enriquecimento concluído: ${merged} atualizados.`, "success", 4000);
+		toast(
+			`Enriquecimento concluído: ${merged} atualizados.`,
+			"success",
+			4000,
+		);
 	});
 }
